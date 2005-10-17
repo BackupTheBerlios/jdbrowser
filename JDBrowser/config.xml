@@ -1,0 +1,8 @@
+<?xml version='1.0' ?>  
+<database>
+    <alias>alias</alias>
+    <driver>driver</driver>
+    <password>password</password>
+    <url>userid</url>
+    <userid>url</userid>
+  </database>

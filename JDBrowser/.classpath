@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/gconf2.10.jar"/>
+	<classpathentry kind="lib" path="lib/glade2.10.jar"/>
+	<classpathentry kind="lib" path="lib/gnome2.10.jar"/>
+	<classpathentry kind="lib" path="lib/gtk2.6.jar"/>
+	<classpathentry kind="lib" path="lib/jdbc-mysql.jar"/>
+	<classpathentry kind="lib" path="lib/commons-beanutils.jar"/>
+	<classpathentry kind="lib" path="lib/commons-beanutils-core.jar"/>
+	<classpathentry kind="lib" path="lib/commons-betwixt.jar"/>
+	<classpathentry kind="lib" path="lib/commons-digester.jar"/>
+	<classpathentry kind="lib" path="lib/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/eclub2-srv/tools/ojdbc14_g.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
