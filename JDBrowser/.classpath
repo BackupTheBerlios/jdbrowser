@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="/eclub2-srv/tools/ojdbc14_g.jar"/>
+	<classpathentry kind="lib" path="lib/xstream-1.1.2.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

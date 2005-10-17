@@ -1,6 +1,8 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.gnu.gdk.Pixbuf;
@@ -25,6 +27,10 @@ import org.gnu.gtk.Viewport;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
+
+import com.thoughtworks.xstream.XStream;
+
+import config.DataSourceConfig;
 
 public class JDBMain {
 	public static String DB_DRIVER = null;
@@ -54,6 +60,7 @@ public class JDBMain {
  *  http://jakarta.apache.org/commons/betwixt/guide/examples#simple-example
  */
 	public JDBMain() throws FileNotFoundException, GladeXMLException, IOException {
+		ReadConfig();
 		ReadProperties();
 		firstApp = new LibGlade("glade/jdbmain.glade", this);
 		addWindowCloser();
@@ -67,6 +74,22 @@ public class JDBMain {
 		dblist.initTable(sqltreeview);
 		dblist.addToTable(null,null);
 	}
+
+	private void ReadConfig() {
+		List databases = new ArrayList();
+		 
+		DataSourceConfig dsc = new DataSourceConfig("oracle", "oracle.jdbc.OracleDriver","secret", "url", "username");
+		DataSourceConfig dsc1 = new DataSourceConfig("mysql", "oracle.jdbc.OracleDriver","secret", "url", "username");
+		databases.add(dsc);
+		databases.add(dsc1);
+		
+		XStream xstream = new XStream();
+		xstream.alias("database", DataSourceConfig.class);
+		
+		String xml = xstream.toXML(databases);
+		System.out.println(xml);
+	
+}
 
 	private void ReadProperties() {
 		Properties properties = new Properties();
