@@ -2,6 +2,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,7 +29,9 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 	List columnnames;
 
 	DataColumnString ColData;
+
 	DataColumn[] columns;
+
 	boolean init = false;
 
 	private String database;
@@ -125,10 +128,10 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 			while (rs.next()) {
 				String columnname = rs.getString("COLUMN_NAME");
 				columnnames.add(columnname);
-				System.out.println("Adding column to array: "+columnname);
+				System.out.println("Adding column to array: " + columnname);
 			}
 			addColumns(columnnames);
-			addDataToTable( null);
+			addDataToTable(null);
 			rs.close();
 			mysql.close();
 			list.showAll();
@@ -151,21 +154,22 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 		}
 		try {
 			Class.forName(JDBMain.DB_DRIVER);
-			Connection mysql = DriverManager.getConnection(JDBMain.DBURL,  JDBMain.DBUSER, JDBMain.DBPASSWORD);
+			Connection mysql = DriverManager.getConnection(JDBMain.DBURL, JDBMain.DBUSER, JDBMain.DBPASSWORD);
 
 			System.out.println("Getting columns for table: " + tablename);
-			if(sql == null)
+			if (sql == null)
 				sql = "select * from " + tablename;
 			ResultSet rs = mysql.createStatement().executeQuery(sql);
+			addColumnsFromResultSet(rs);
 			int counter = 0;
 			while (rs.next()) {
 				counter++;
 				TreeIter dbrow = ls.appendRow();
 				for (int i = 0; i < columnnames.size(); i++) {
-					String columnvalue= rs.getString(columnnames.get(i).toString());
+					String columnvalue = rs.getString(columnnames.get(i).toString());
 					ls.setValue(dbrow, (DataColumnString) columns[i], columnvalue);
 				}
-				if(counter >= JDBMain.getMaxRows())
+				if (counter >= JDBMain.getMaxRows())
 					break;
 			}
 
@@ -179,7 +183,17 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 		}
 
 	}
-
+	public void addColumnsFromResultSet(ResultSet rs) throws SQLException {
+		ResultSetMetaData metadata = rs.getMetaData();
+		if (columnnames == null)
+			columnnames = new LinkedList();
+		else
+			columnnames.clear();
+		for (int i = 1; i <= metadata.getColumnCount(); i++) {
+			columnnames.add(metadata.getColumnLabel(i));
+		}
+		addColumns(columnnames);
+	}
 	public void selectionChangedEvent(TreeSelectionEvent event) {
 		System.out.println("OneClick " + event);
 	}

@@ -19,6 +19,7 @@ import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.ListStore;
+import org.gnu.gtk.TextView;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
@@ -68,8 +69,8 @@ public class JDBMain {
 		TreeView sqltreeview = (TreeView) firstApp.getWidget("sqltreeview");
 		AppBar statusbar = (AppBar) firstApp.getWidget("statusbar");
 		statusbar.setStatusText("Appliction loaded");
-		//TextView sqlviewer = (TextView) firstApp.getWidget("sqltextview");
-		//SqlView sqlview = new SqlView(sqlviewer,firstApp, dblist);
+		TextView sqlviewer = (TextView) firstApp.getWidget("sqltextview");
+		SqlView sqlview = new SqlView(sqlviewer,firstApp, dblist);
 		
 		dblist.initTable(sqltreeview);
 		dblist.addToTable(null,null);
