@@ -88,9 +88,6 @@ public class JDBMain {
 	}
 
 	private void ReadConfig() {
-		//DataSourceConfig dsc = new DataSourceConfig("oracle", "oracle.jdbc.OracleDriver", "secret", "url", "username");
-		DataSourceConfig dsc1 = new DataSourceConfig("mysql", "oracle.jdbc.OracleDriver", "secret", "url", "username");
-
 		XStream xstream = new XStream(new DomDriver());
 		xstream.alias("database", DataSourceConfig.class);
 		try {
@@ -103,6 +100,20 @@ public class JDBMain {
 			e.printStackTrace();
 		}
 
+	}
+	public  static ArrayList getConfiguredDatabases() {
+		XStream xstream = new XStream(new DomDriver());
+		xstream.alias("database", DataSourceConfig.class);
+		try {
+			return  (ArrayList)xstream.fromXML(new FileReader("config.xml"));
+//			DataSourceConfig dsc = (DataSourceConfig )databases.get(0);
+//			System.out.println("Config says: "+dsc.getDriver());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private void WriteConfig() {

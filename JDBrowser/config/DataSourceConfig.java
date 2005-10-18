@@ -61,5 +61,7 @@ public class DataSourceConfig {
 	public void setUserid(String userid) {
 		this.userid = userid;
 	}
-
+	public String toString() {
+		return alias;
+	}
 }
