@@ -1,6 +1,12 @@
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -30,6 +36,7 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import config.DataSourceConfig;
 
@@ -52,14 +59,18 @@ public class JDBMain {
 	DataColumnString ColData;
 
 	ComboBox searchtypecombo;
+
 	public static String DBURL = "";
+
 	public static String DBUSER = "";
-	public static String DBPASSWORD =""; 
-/*
- * 
- *  for configuration parsing see
- *  http://jakarta.apache.org/commons/betwixt/guide/examples#simple-example
- */
+
+	public static String DBPASSWORD = "";
+
+	/*
+	 * 
+	 * for configuration parsing see
+	 * http://jakarta.apache.org/commons/betwixt/guide/examples#simple-example
+	 */
 	public JDBMain() throws FileNotFoundException, GladeXMLException, IOException {
 		ReadConfig();
 		ReadProperties();
@@ -70,27 +81,57 @@ public class JDBMain {
 		AppBar statusbar = (AppBar) firstApp.getWidget("statusbar");
 		statusbar.setStatusText("Appliction loaded");
 		TextView sqlviewer = (TextView) firstApp.getWidget("sqltextview");
-		SqlView sqlview = new SqlView(sqlviewer,firstApp, dblist);
-		
+		SqlView sqlview = new SqlView(sqlviewer, firstApp, dblist);
+
 		dblist.initTable(sqltreeview);
-		dblist.addToTable(null,null);
+		dblist.addToTable(null, null);
 	}
 
 	private void ReadConfig() {
+		//DataSourceConfig dsc = new DataSourceConfig("oracle", "oracle.jdbc.OracleDriver", "secret", "url", "username");
+		DataSourceConfig dsc1 = new DataSourceConfig("mysql", "oracle.jdbc.OracleDriver", "secret", "url", "username");
+
+		XStream xstream = new XStream(new DomDriver());
+		xstream.alias("database", DataSourceConfig.class);
+		try {
+			List databases = (ArrayList)xstream.fromXML(new FileReader("config.xml"));
+			DataSourceConfig dsc = (DataSourceConfig )databases.get(0);
+			System.out.println("Config says: "+dsc.getDriver());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void WriteConfig() {
 		List databases = new ArrayList();
-		 
-		DataSourceConfig dsc = new DataSourceConfig("oracle", "oracle.jdbc.OracleDriver","secret", "url", "username");
-		DataSourceConfig dsc1 = new DataSourceConfig("mysql", "oracle.jdbc.OracleDriver","secret", "url", "username");
+
+		DataSourceConfig dsc = new DataSourceConfig("oracle", "oracle.jdbc.OracleDriver", "secret", "url", "username");
+		DataSourceConfig dsc1 = new DataSourceConfig("mysql", "oracle.jdbc.OracleDriver", "secret", "url", "username");
 		databases.add(dsc);
 		databases.add(dsc1);
-		
+
 		XStream xstream = new XStream();
 		xstream.alias("database", DataSourceConfig.class);
-		
+
 		String xml = xstream.toXML(databases);
 		System.out.println(xml);
-	
-}
+		try {
+			OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("config.xml"));
+			BufferedWriter bw = new BufferedWriter(osw);
+			bw.write(xml);
+			bw.flush();
+			bw.close();
+			osw.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	private void ReadProperties() {
 		Properties properties = new Properties();
@@ -100,7 +141,7 @@ public class JDBMain {
 			DBUSER = properties.getProperty("dbuser");
 			DBPASSWORD = properties.getProperty("dbpassword");
 			DB_DRIVER = properties.getProperty("dbdriver");
-			
+
 		} catch (IOException e) {
 			System.out.println("Can't find or load properties file jdbrowser.properties");
 		}
@@ -162,8 +203,7 @@ public class JDBMain {
 		resulttable.appendColumn(col2);
 	}
 
-
-	public void addToTable(byte[] image, String data)  {
+	public void addToTable(byte[] image, String data) {
 		TreeIter row = ls.appendRow();
 		if (!(image == null))
 			ls.setValue(row, ColThumbImage, new Pixbuf(image));
@@ -173,8 +213,9 @@ public class JDBMain {
 		resulttable.showAll();
 
 	}
-	public static  int getMaxRows() {
-		Entry max = (Entry)JDBMain.firstApp.getWidget("max_number_of_rows");
+
+	public static int getMaxRows() {
+		Entry max = (Entry) JDBMain.firstApp.getWidget("max_number_of_rows");
 		String text = max.getText();
 		return Integer.parseInt(text);
 	}

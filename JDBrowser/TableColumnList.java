@@ -10,7 +10,6 @@ import java.util.List;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
-import org.gnu.gtk.Entry;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
@@ -33,8 +32,6 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 	DataColumn[] columns;
 
 	boolean init = false;
-
-	private String database;
 
 	private String tablename;
 
@@ -101,12 +98,10 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 			col2.setTitle(titles.get(i).toString());
 			list.appendColumn(col2);
 		}
-
 		list.setModel(ls);
 	}
 
 	public void addToTable(String tablename, String database) {
-		this.database = database;
 		this.tablename = tablename;
 		if (!init)
 			initTable();
