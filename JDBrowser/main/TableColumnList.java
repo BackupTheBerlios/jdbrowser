@@ -1,3 +1,5 @@
+package main;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -12,7 +14,6 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.event.TreeSelectionEvent;
@@ -130,7 +131,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 				System.out.println("Adding column to array: " + columnname);
 			}
 			addColumns(columnnames);
-			addDataToTable(null, db, database);
+			addDataToTable(null, database);
 			rs.close();
 			mysql.close();
 			list.showAll();
@@ -142,7 +143,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 
 	}
 
-	public void addDataToTable(String sql,String db, DataSourceConfig database) {
+	public void addDataToTable(String sql, DataSourceConfig database) {
 		if (!init)
 			initTable();
 		while (true) {
@@ -152,9 +153,9 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 			ls.removeRow(item);
 		}
 		try {
+			long start = System.currentTimeMillis();
 			Class.forName(database.getDriver());
 			Connection mysql = DriverManager.getConnection(database.getUrl(), database.getUserid(), database.getPassword());
-mysql.setCatalog(db);
 			System.out.println("Getting columns for table: " + tablename);
 			if (sql == null)
 				sql = "select * from " + tablename;
@@ -171,13 +172,16 @@ mysql.setCatalog(db);
 				if (counter >= JDBMain.getMaxRows())
 					break;
 			}
-
+			long end = System.currentTimeMillis();
+			JDBMain.setStatusbarMessage("Command executed in "+(start-end)+" milliseconds");
 			rs.close();
 			mysql.close();
 			list.showAll();
 		} catch (ClassNotFoundException e) {
+			JDBMain.showErrorDialog(e.getMessage());
 			e.printStackTrace();
 		} catch (SQLException e) {
+			JDBMain.showErrorDialog(e.getMessage());
 			e.printStackTrace();
 		}
 

@@ -1,3 +1,5 @@
+package main;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +18,7 @@ import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gnome.AppBar;
 import org.gnu.gnome.Program;
+import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererPixbuf;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.ComboBox;
@@ -25,25 +28,33 @@ import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.ListStore;
+import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
+import org.gnu.gtk.ToolButton;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.Viewport;
+import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
+import org.gnu.gtk.event.ToolButtonEvent;
+import org.gnu.gtk.event.ToolButtonListener;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import config.DataSourceConfig;
+import config.DataSourceConfigUI;
 
-public class JDBMain {
+public class JDBMain implements ToolButtonListener {
 	public static String DB_DRIVER = null;
 
-	public static LibGlade firstApp;
+	public static LibGlade gladeApp;
 
 	Viewport viewport;
 
@@ -65,7 +76,7 @@ public class JDBMain {
 	public static String DBUSER = "";
 
 	public static String DBPASSWORD = "";
-
+	static AppBar statusbar;
 	/*
 	 * 
 	 * for configuration parsing see
@@ -74,26 +85,35 @@ public class JDBMain {
 	public JDBMain() throws FileNotFoundException, GladeXMLException, IOException {
 		ReadConfig();
 		ReadProperties();
-		firstApp = new LibGlade("glade/jdbmain.glade", this);
+		gladeApp = new LibGlade("glade/jdbmain.glade", this);
 		addWindowCloser();
-		DatabaseList dblist = new DatabaseList((TreeView) firstApp.getWidget("databaselist"));
-		TreeView sqltreeview = (TreeView) firstApp.getWidget("sqltreeview");
-		AppBar statusbar = (AppBar) firstApp.getWidget("statusbar");
+		
+		TextView sqlviewer = (TextView) gladeApp.getWidget("sqltextview");		
+		SqlView sqlview = new SqlView();
+		DatabaseList dblist = new DatabaseList((TreeView) gladeApp.getWidget("databaselist"));
+
+		
+		
+		TreeView sqltreeview = (TreeView) gladeApp.getWidget("sqltreeview");
+		statusbar = (AppBar) gladeApp.getWidget("statusbar");
 		statusbar.setStatusText("Appliction loaded");
-		TextView sqlviewer = (TextView) firstApp.getWidget("sqltextview");
-		SqlView sqlview = new SqlView(sqlviewer, firstApp, dblist);
+		
+
+		ToolButton newbutton = (ToolButton) gladeApp.getWidget("new_button");
+		newbutton.addListener(this);
 
 		dblist.initTable(sqltreeview);
 		dblist.addToTable(null, null);
+
 	}
 
 	private void ReadConfig() {
 		XStream xstream = new XStream(new DomDriver());
 		xstream.alias("database", DataSourceConfig.class);
 		try {
-			List databases = (ArrayList)xstream.fromXML(new FileReader("config.xml"));
-			DataSourceConfig dsc = (DataSourceConfig )databases.get(0);
-			System.out.println("Config says: "+dsc.getDriver());
+			List databases = (ArrayList) xstream.fromXML(new FileReader("config.xml"));
+			DataSourceConfig dsc = (DataSourceConfig) databases.get(0);
+			System.out.println("Config says: " + dsc.getDriver());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -101,13 +121,14 @@ public class JDBMain {
 		}
 
 	}
-	public  static ArrayList getConfiguredDatabases() {
+
+	public static ArrayList getConfiguredDatabases() {
 		XStream xstream = new XStream(new DomDriver());
 		xstream.alias("database", DataSourceConfig.class);
 		try {
-			return  (ArrayList)xstream.fromXML(new FileReader("config.xml"));
-//			DataSourceConfig dsc = (DataSourceConfig )databases.get(0);
-//			System.out.println("Config says: "+dsc.getDriver());
+			return (ArrayList) xstream.fromXML(new FileReader("config.xml"));
+			// DataSourceConfig dsc = (DataSourceConfig )databases.get(0);
+			// System.out.println("Config says: "+dsc.getDriver());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -171,7 +192,7 @@ public class JDBMain {
 	}
 
 	public void addWindowCloser() {
-		Window window = (Window) firstApp.getWidget("mainwindow");
+		Window window = (Window) gladeApp.getWidget("mainwindow");
 		window.addListener(new LifeCycleListener() {
 			public void lifeCycleEvent(LifeCycleEvent event) {
 			}
@@ -226,8 +247,34 @@ public class JDBMain {
 	}
 
 	public static int getMaxRows() {
-		Entry max = (Entry) JDBMain.firstApp.getWidget("max_number_of_rows");
+		Entry max = (Entry) JDBMain.gladeApp.getWidget("max_number_of_rows");
 		String text = max.getText();
 		return Integer.parseInt(text);
+	}
+
+	public static LibGlade getGladeApp() {
+		return gladeApp;
+	}
+
+	public boolean toolButtonEvent(ToolButtonEvent event) {
+		Widget source = (Widget) event.getSource();
+		if (source.getName().equals("new_button")) {
+			System.out.println("new button");
+			new DataSourceConfigUI();
+		}
+		return true;
+	}
+	public static void setStatusbarMessage(String msg) {
+		statusbar.setStatusText(msg);
+	}
+	
+	public static void showErrorDialog(String text) {
+		Window errorwindow = (Window) gladeApp.getWidget("errorwindow");
+		TextView textview = (TextView) gladeApp.getWidget("errortextview");
+		textview.setEditable(false);
+		TextBuffer buf = new TextBuffer();
+		buf.setText(text);
+		textview.setBuffer(buf);
+		errorwindow.show();
 	}
 }

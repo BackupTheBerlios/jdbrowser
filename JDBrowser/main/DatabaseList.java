@@ -1,3 +1,4 @@
+package main;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -5,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+
 import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.TreeIter;
@@ -19,11 +22,12 @@ import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
 import config.DataSourceConfig;
+import config.DataSourceConfigUI;
 
 public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 	TreeView list;
 
-	TableColumnList sqltreeview;
+	static TableColumnList sqltreeview;
 
 	TreeStore ls;
 
@@ -59,22 +63,29 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 	}
 
 	public void addToTable(byte[] image, String data) {
+		DatabaseMetaData dbmeta = null;
+		ResultSet dbs= null;
+		Connection conn = null;
 		try {
-
+			
 			ArrayList databases = JDBMain.getConfiguredDatabases();
 			for (int i = 0; i < databases.size(); i++) {
 				DataSourceConfig dsc = (DataSourceConfig) databases.get(i);
+
 				Class.forName(dsc.getDriver());
 				// Connection mysql = DriverManager.getConnection(JDBMain.DBURL,
 				// JDBMain.DBUSER, JDBMain.DBPASSWORD);
+				try {
 				System.out.println(dsc.getUrl() + "\t" + dsc.getUserid() + "\t" + dsc.getPassword());
-				Connection mysql = DriverManager.getConnection(dsc.getUrl(), dsc.getUserid(), dsc.getPassword());
-				DatabaseMetaData dbmeta = mysql.getMetaData();
-				System.out.println(dbmeta.supportsSchemasInTableDefinitions());
+				conn = DriverManager.getConnection(dsc.getUrl(), dsc.getUserid(), dsc.getPassword());
+				dbmeta = conn.getMetaData();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				if (dbmeta.supportsSchemasInTableDefinitions()) { // mainly
 																	// oracle
 					System.out.println("Runnig on : " + dbmeta.getDatabaseProductName());
-					ResultSet dbs = dbmeta.getSchemas();
+					dbs = dbmeta.getSchemas();
 
 					TreeIter databaseconfig = ls.appendRow(null);
 					ls.setData("databaseinfo_"+dsc.getAlias(), dsc);
@@ -82,7 +93,9 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					while (dbs.next()) {
 						TreeIter dbrow = ls.appendRow(databaseconfig);
 						ls.setValue(dbrow, ColData, dbs.getString(1));
-
+//						SqlView.getCombobox_database().appendText(""+dbs.getString(1));
+						SqlView.getCombobox_database().addData(dbs.getString(1), ""+dbs.getString(1), dsc);
+						
 						TreeIter tablesrow;
 						String[] types = { "TABLE" };
 						ResultSet tables = dbmeta.getTables("", dbs.getString(1), "%", types);
@@ -93,12 +106,10 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 						}
 						tables.close();
 					}
-					dbs.close();
-					mysql.close();
 				} else {
 					System.out.println("Runnig on witn no schemas : " + dbmeta.getDatabaseProductName());
 					String[] types = { "TABLE" };
-					ResultSet dbs = dbmeta.getCatalogs();
+					dbs = dbmeta.getCatalogs();
 
 					TreeIter databaseconfig = ls.appendRow(null);
 
@@ -107,6 +118,7 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					while (dbs.next()) {
 						TreeIter dbrow = ls.appendRow(databaseconfig);
 						ls.setValue(dbrow, ColData, dbs.getString(1));
+						SqlView.getCombobox_database().addData(dbs.getString(1), ""+dbs.getString(1), dsc);
 
 						TreeIter tablesrow;
 						//System.out.println(dbs.getString(1));
@@ -118,16 +130,22 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 						}
 						tables.close();
 					}
-					dbs.close();
-					mysql.close();
 				}
 			}
 
+			System.out.println(SqlView.getCombobox_database().getData("smatest"));
 			list.showAll();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				dbs.close();
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
@@ -162,7 +180,7 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 
 	}
 
-	public TableColumnList getSqltreeview() {
+	public static TableColumnList getSqltreeview() {
 		return sqltreeview;
 	}
 }
