@@ -1,8 +1,16 @@
-<?xml version='1.0' ?>  
-<database>
-    <alias>alias</alias>
-    <driver>driver</driver>
-    <password>password</password>
-    <url>userid</url>
-    <userid>url</userid>
+<list>
+  <database>
+    <alias>wc prod on oracle</alias>
+    <url>jdbc:oracle:thin:@svend:1521:prod</url>
+    <driver>oracle.jdbc.OracleDriver</driver>
+    <userid>eclub2</userid>
+    <password>secret</password>
   </database>
+  <database>
+    <alias>mysql</alias>
+    <url>jdbc:mysql://10.20.4.68:3306/test</url>
+    <driver>com.mysql.jdbc.Driver</driver>
+    <userid>root</userid>
+    <password></password>
+  </database>
+</list>

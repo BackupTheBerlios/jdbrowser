@@ -20,6 +20,8 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
+import config.DataSourceConfig;
+
 public class TableColumnList implements TreeSelectionListener, TreeViewListener {
 	TreeView list;
 
@@ -64,20 +66,22 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 		init = true;
 	}
 
-	public void addColumn(String title) {
-		ls = new ListStore(new DataColumn[] { ColData });
-		DataColumnString thiscol = new DataColumnString();
-		TreeViewColumn col2 = new TreeViewColumn();
-		CellRendererText render2 = new CellRendererText();
-		col2.packStart(render2, true);
-		col2.addAttributeMapping(render2, CellRendererText.Attribute.TEXT, thiscol);
-		col2.setTitle(title);
-		list.appendColumn(col2);
-
-		list.setModel(ls);
-	}
+//	public void addColumn(String title) {
+//		ls = new ListStore(new DataColumn[] { ColData });
+//		DataColumnString thiscol = new DataColumnString();
+//		TreeViewColumn col2 = new TreeViewColumn();
+//		CellRendererText render2 = new CellRendererText();
+//		col2.packStart(render2, true);
+//		col2.addAttributeMapping(render2, CellRendererText.Attribute.TEXT, thiscol);
+//		col2.setTitle(title);
+//		list.appendColumn(col2);
+//
+//		list.setModel(ls);
+//	}
 
 	public void addColumns(List titles) {
+		if (!init)
+			initTable();
 		TreeViewColumn[] tmpcolumns = list.getColumns();
 		for (int j = 0; j < tmpcolumns.length; j++) {
 			list.removeColumn(tmpcolumns[j]);
@@ -101,7 +105,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 		list.setModel(ls);
 	}
 
-	public void addToTable(String tablename, String database) {
+	public void addToTable(String tablename, String db, DataSourceConfig database) {
 		this.tablename = tablename;
 		if (!init)
 			initTable();
@@ -112,12 +116,12 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 			ls.removeRow(item);
 		}
 		try {
-			Class.forName(JDBMain.DB_DRIVER);
-			Connection mysql = DriverManager.getConnection(JDBMain.DBURL, JDBMain.DBUSER, JDBMain.DBPASSWORD);
+			Class.forName(database.getDriver());
+			Connection mysql = DriverManager.getConnection(database.getUrl(), database.getUserid(), database.getPassword());
 			DatabaseMetaData dbmeta = mysql.getMetaData();
 
-			System.out.println("Getting columns for table: " + tablename);
-			ResultSet rs = dbmeta.getColumns("", "ECLUB2", tablename, null);
+			System.out.println("Getting columns for table: " + tablename+" in database "+db);
+			ResultSet rs = dbmeta.getColumns(db, null, tablename, null);
 
 			columnnames = new LinkedList();
 			while (rs.next()) {
@@ -126,7 +130,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 				System.out.println("Adding column to array: " + columnname);
 			}
 			addColumns(columnnames);
-			addDataToTable(null);
+			addDataToTable(null, db, database);
 			rs.close();
 			mysql.close();
 			list.showAll();
@@ -138,7 +142,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 
 	}
 
-	public void addDataToTable(String sql) {
+	public void addDataToTable(String sql,String db, DataSourceConfig database) {
 		if (!init)
 			initTable();
 		while (true) {
@@ -148,9 +152,9 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 			ls.removeRow(item);
 		}
 		try {
-			Class.forName(JDBMain.DB_DRIVER);
-			Connection mysql = DriverManager.getConnection(JDBMain.DBURL, JDBMain.DBUSER, JDBMain.DBPASSWORD);
-
+			Class.forName(database.getDriver());
+			Connection mysql = DriverManager.getConnection(database.getUrl(), database.getUserid(), database.getPassword());
+mysql.setCatalog(db);
 			System.out.println("Getting columns for table: " + tablename);
 			if (sql == null)
 				sql = "select * from " + tablename;
@@ -194,13 +198,13 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 	}
 
 	public void treeViewEvent(TreeViewEvent event) {
-		if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
-			TreePath[] tp = list.getSelection().getSelectedRows();
-			if (tp.length == 1) {
-				TreeIter item = ls.getIter(tp[0].toString());
-				System.out.println("string selected: " + ls.getValue(item, ColData));
-			}
-		}
+//		if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
+//			TreePath[] tp = list.getSelection().getSelectedRows();
+//			if (tp.length == 1) {
+//				TreeIter item = ls.getIter(tp[0].toString());
+//				System.out.println("string selected: " + ls.getValue(item, ColData));
+//			}
+//		}
 
 	}
 }
