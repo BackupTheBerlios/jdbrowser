@@ -131,7 +131,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 				System.out.println("Adding column to array: " + columnname);
 			}
 			addColumns(columnnames);
-			addDataToTable(null, database);
+			addDataToTable(null,db, database);
 			rs.close();
 			mysql.close();
 			list.showAll();
@@ -143,7 +143,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 
 	}
 
-	public void addDataToTable(String sql, DataSourceConfig database) {
+	public void addDataToTable(String sql, String db, DataSourceConfig database) {
 		if (!init)
 			initTable();
 		while (true) {
@@ -159,6 +159,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 			System.out.println("Getting columns for table: " + tablename);
 			if (sql == null)
 				sql = "select * from " + tablename;
+			mysql.setCatalog(db);
 			ResultSet rs = mysql.createStatement().executeQuery(sql);
 			addColumnsFromResultSet(rs);
 			int counter = 0;
@@ -173,7 +174,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener 
 					break;
 			}
 			long end = System.currentTimeMillis();
-			JDBMain.setStatusbarMessage("Command executed in "+(start-end)+" milliseconds");
+			JDBMain.setStatusbarMessage("Command executed in "+(end-start)+" milliseconds");
 			rs.close();
 			mysql.close();
 			list.showAll();

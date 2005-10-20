@@ -34,7 +34,10 @@ public class SqlView implements ButtonListener {
 			System.out.println(test);
 			System.out.println(getCombobox_database().getActiveText());
 			DataSourceConfig dsc = (DataSourceConfig) getCombobox_database().getData(getCombobox_database().getActiveText());
-			DatabaseList.getSqltreeview().addDataToTable(test, dsc);
+			if(!(SqlView.cb_database.getActiveText() == null || SqlView.cb_database.getActiveText().equals("")))
+				DatabaseList.getSqltreeview().addDataToTable(test,SqlView.cb_database.getActiveText(), dsc);
+			else
+				JDBMain.showErrorDialog("Please select a database from the dropdown menu");
 		}
 	}
 
