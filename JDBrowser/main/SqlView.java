@@ -2,8 +2,6 @@ package main;
 
 import helpers.ComboBoxHelper;
 
-import org.gnu.gdk.EventType;
-import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.TextBuffer;
@@ -23,6 +21,8 @@ public class SqlView implements ButtonListener {
 	public SqlView() {
 		Button execute = (Button) JDBMain.getGladeApp().getWidget("execute_sql_button");
 		view = (TextView) JDBMain.getGladeApp().getWidget("sqltextview");
+		view.setCursorVisible(true);
+		view.setEditable(true);
 		execute.addListener(this);
 	}
 
