@@ -158,6 +158,7 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 		if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
 			TreePath[] tp = list.getSelection().getSelectedRows();
 			if (tp.length == 1) {
+				if(event.getTreePath().getDepth() >= 3) {
 				TreePath tp1 = event.getTreePath();
 				
 				
@@ -176,6 +177,7 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 				System.out.println(dsc.getUrl());
 				sqltreeview.addToTable(table, database, dsc);
 			}
+			} 
 		}
 
 	}
