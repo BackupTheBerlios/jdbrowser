@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 
 import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.Clipboard;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;

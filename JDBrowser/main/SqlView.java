@@ -2,7 +2,9 @@ package main;
 
 import helpers.ComboBoxHelper;
 
+import org.gnu.gdk.Atom;
 import org.gnu.gtk.Button;
+import org.gnu.gtk.Clipboard;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
@@ -18,12 +20,17 @@ public class SqlView implements ButtonListener {
 	DatabaseList dblist;
 	static ComboBoxHelper cb_database;
 	static ComboBox cb_table;
+	
+//	Clipboard cb;
 	public SqlView() {
 		Button execute = (Button) JDBMain.getGladeApp().getWidget("execute_sql_button");
 		view = (TextView) JDBMain.getGladeApp().getWidget("sqltextview");
 		view.setCursorVisible(true);
 		view.setEditable(true);
 		execute.addListener(this);
+//		cb = Clipboard.get(new Atom(view.getHandle()));
+		
+		
 	}
 
 	public void buttonEvent(ButtonEvent event) {
@@ -38,6 +45,8 @@ public class SqlView implements ButtonListener {
 				DatabaseList.getSqltreeview().addDataToTable(test,SqlView.cb_database.getActiveText(), dsc);
 			else
 				JDBMain.showErrorDialog("Please select a database from the dropdown menu");
+			
+//			System.out.println("---- > "+cb.getText());
 		}
 	}
 
