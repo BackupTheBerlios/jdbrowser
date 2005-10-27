@@ -103,7 +103,9 @@ public class JDBMain implements ToolButtonListener {
 		newbutton.addListener(this);
 
 		dblist.initTable(sqltreeview);
-		dblist.addToTable(null, null);
+		dblist.createDatbaseListInView();
+
+//		dblist.addToTable(null, null);
 
 	}
 
@@ -137,6 +139,22 @@ public class JDBMain implements ToolButtonListener {
 		return null;
 	}
 
+	public static DataSourceConfig getConfiguredDatabases(String alias) {
+		XStream xstream = new XStream(new DomDriver());
+		xstream.alias("database", DataSourceConfig.class);
+		try {
+			ArrayList databases = (ArrayList) xstream.fromXML(new FileReader("config.xml"));
+			for (int i = 0; i < databases.size(); i++) {
+				DataSourceConfig dsc = (DataSourceConfig) databases.get(i);
+				if(dsc.getAlias().equals(alias))
+					return dsc;
+				}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	private void WriteConfig() {
 		List databases = new ArrayList();
 
