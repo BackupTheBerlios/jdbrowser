@@ -6,6 +6,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import model.DatabaseModel;
 
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.Clipboard;
@@ -84,10 +89,11 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-				if (dbmeta.supportsSchemasInTableDefinitions()) { // mainly
-					// oracle
+				if (dbmeta.supportsSchemasInTableDefinitions()) { 
+					// mainly oracle
 					System.out.println("Runnig on : " + dbmeta.getDatabaseProductName());
 					dbs = dbmeta.getSchemas();
+
 
 					TreeIter databaseconfig = ls.appendRow(null);
 					ls.setData("databaseinfo_" + dsc.getAlias(), dsc);
@@ -102,12 +108,16 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 						TreeIter tablesrow;
 						String[] types = { "TABLE" };
 						ResultSet tables = dbmeta.getTables("", dbs.getString(1), "%", types);
+
 						while (tables.next()) {
 							tablesrow = ls.appendRow(dbrow);
 							// System.out.println(tables.getString(3));
 							ls.setValue(tablesrow, ColData, tables.getString(3));
+
 						}
 						tables.close();
+
+						
 					}
 				} else {
 					System.out.println("Runnig on witn no schemas : " + dbmeta.getDatabaseProductName());
@@ -132,6 +142,7 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 							ls.setValue(tablesrow, ColData, tables.getString(3));
 						}
 						tables.close();
+						
 					}
 				}
 			}
@@ -186,11 +197,17 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					TreeIter tablesrow;
 					String[] types = { "TABLE" };
 					ResultSet tables = dbmeta.getTables("", dbs.getString(1), "%", types);
+					
+					DatabaseModel dbmodel = new DatabaseModel();
+					dbmodel.setDatabasename(dbs.getString(1));
 					while (tables.next()) {
 						tablesrow = ls.appendRow(dbrow);
 						// System.out.println(tables.getString(3));
 						ls.setValue(tablesrow, ColData, tables.getString(3));
+						dbmodel.addTable(tables.getString(3));
 					}
+					
+					dbmodel.dumpTables();
 					tables.close();
 				}
 			} else {
