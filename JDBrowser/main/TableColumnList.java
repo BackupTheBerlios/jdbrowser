@@ -13,7 +13,6 @@ import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
-import org.gnu.gtk.SortType;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;

@@ -1,24 +1,16 @@
 package main;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.gnu.gdk.Pixbuf;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gnome.AppBar;
 import org.gnu.gnome.Program;
-import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererPixbuf;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.ComboBox;
@@ -38,8 +30,6 @@ import org.gnu.gtk.VBox;
 import org.gnu.gtk.Viewport;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
-import org.gnu.gtk.event.ButtonEvent;
-import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.ToolButtonEvent;
@@ -77,22 +67,15 @@ public class JDBMain implements ToolButtonListener {
 
 	public static String DBPASSWORD = "";
 	static AppBar statusbar;
-	/*
-	 * 
-	 * for configuration parsing see
-	 * http://jakarta.apache.org/commons/betwixt/guide/examples#simple-example
-	 */
+
 	public JDBMain() throws FileNotFoundException, GladeXMLException, IOException {
 		ReadConfig();
-		ReadProperties();
 		gladeApp = new LibGlade("glade/jdbmain.glade", this);
 		addWindowCloser();
 		
 		TextView sqlviewer = (TextView) gladeApp.getWidget("sqltextview");		
 		SqlView sqlview = new SqlView();
 		DatabaseList dblist = new DatabaseList((TreeView) gladeApp.getWidget("databaselist"));
-
-		
 		
 		TreeView sqltreeview = (TreeView) gladeApp.getWidget("sqltreeview");
 		statusbar = (AppBar) gladeApp.getWidget("statusbar");
@@ -104,9 +87,6 @@ public class JDBMain implements ToolButtonListener {
 
 		dblist.initTable(sqltreeview);
 		dblist.createDatbaseListInView();
-
-//		dblist.addToTable(null, null);
-
 	}
 
 	private void ReadConfig() {
@@ -116,12 +96,9 @@ public class JDBMain implements ToolButtonListener {
 			List databases = (ArrayList) xstream.fromXML(new FileReader("config.xml"));
 			DataSourceConfig dsc = (DataSourceConfig) databases.get(0);
 			System.out.println("Config says: " + dsc.getDriver());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public static ArrayList getConfiguredDatabases() {
@@ -132,8 +109,6 @@ public class JDBMain implements ToolButtonListener {
 			// DataSourceConfig dsc = (DataSourceConfig )databases.get(0);
 			// System.out.println("Config says: "+dsc.getDriver());
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -155,48 +130,7 @@ public class JDBMain implements ToolButtonListener {
 		}
 		return null;
 	}
-	private void WriteConfig() {
-		List databases = new ArrayList();
-
-		DataSourceConfig dsc = new DataSourceConfig("oracle", "oracle.jdbc.OracleDriver", "secret", "url", "username");
-		DataSourceConfig dsc1 = new DataSourceConfig("mysql", "oracle.jdbc.OracleDriver", "secret", "url", "username");
-		databases.add(dsc);
-		databases.add(dsc1);
-
-		XStream xstream = new XStream();
-		xstream.alias("database", DataSourceConfig.class);
-
-		String xml = xstream.toXML(databases);
-		System.out.println(xml);
-		try {
-			OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("config.xml"));
-			BufferedWriter bw = new BufferedWriter(osw);
-			bw.write(xml);
-			bw.flush();
-			bw.close();
-			osw.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private void ReadProperties() {
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream("jdbrowser.properties"));
-			DBURL = properties.getProperty("dburl");
-			DBUSER = properties.getProperty("dbuser");
-			DBPASSWORD = properties.getProperty("dbpassword");
-			DB_DRIVER = properties.getProperty("dbdriver");
-
-		} catch (IOException e) {
-			System.out.println("Can't find or load properties file jdbrowser.properties");
-		}
-	}
-
+	
 	public static void main(String[] args) {
 		// new ReadConfig();
 		try {

@@ -2,12 +2,7 @@ package main;
 
 import helpers.ComboBoxHelper;
 
-import org.gnu.gdk.Atom;
-import org.gnu.gdk.ModifierType;
-import org.gnu.glib.EventType;
-import org.gnu.glib.Type;
 import org.gnu.gtk.Button;
-import org.gnu.gtk.Clipboard;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
@@ -19,7 +14,7 @@ import org.gnu.gtk.event.KeyListener;
 
 import config.DataSourceConfig;
 
-public class SqlView implements ButtonListener, KeyListener {
+public class SqlView implements KeyListener {
 	TextView view;
 
 	TreeView sqltreeview;
@@ -38,12 +33,13 @@ public class SqlView implements ButtonListener, KeyListener {
 		view = (TextView) JDBMain.getGladeApp().getWidget("sqltextview");
 		view.setCursorVisible(true);
 		view.setEditable(true);
-		view.addListener((KeyListener) this);
-		execute.addListener((ButtonListener) this);
+		view.addListener(this);
+		ExecuteButtonListener bl = new ExecuteButtonListener();
+		execute.addListener(bl);
 		// cb = Clipboard.get(new Atom(view.getHandle()));
 
 	}
-
+	private class ExecuteButtonListener implements ButtonListener {
 	public void buttonEvent(ButtonEvent event) {
 		if (event.isOfType(ButtonEvent.Type.CLICK)) {
 			System.out.println("click");
@@ -60,7 +56,7 @@ public class SqlView implements ButtonListener, KeyListener {
 			// System.out.println("---- > "+cb.getText());
 		}
 	}
-
+	}
 	public static ComboBoxHelper getCombobox_database() {
 		if (cb_database == null) {
 			cb_database = new ComboBoxHelper(JDBMain.getGladeApp().getWidget("databasecombobox").getHandle());
