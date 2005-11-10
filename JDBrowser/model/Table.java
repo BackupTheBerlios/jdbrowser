@@ -2,9 +2,9 @@ package model;
 
 import java.util.Collection;
 
-public class Table {
+public class Table implements TableAndColumnInterface {
 	String name;
-
+	String schema;
 	Collection Columns;
 
 	public Collection getColumns() {
@@ -25,6 +25,14 @@ public class Table {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getSchema() {
+		return schema;
+	}
+
+	public void setSchema(String schema) {
+		this.schema = schema;
 	}
 
 }

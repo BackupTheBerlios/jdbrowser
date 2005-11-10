@@ -13,5 +13,11 @@
     <userid>root</userid>
     <password></password>
   </database>
+  <database>
+    <alias>WC Mysql</alias>
+    <url>jdbc:mysql://10.20.4.68:3306/test</url>
+    <driver>com.mysql.jdbc.Driver</driver>
+    <userid>root</userid>
+    <password></password>
+  </database>
 </list>
-

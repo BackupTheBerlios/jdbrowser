@@ -30,6 +30,14 @@ public class DatabaseModel {
 			tables = new ArrayList();
 		tables.add(table);
 	}
+	public void addTable(String tablename, String schema) {
+		Table table = new Table();
+		table.setName(tablename);
+		table.setSchema(schema);
+		if(tables == null)
+			tables = new ArrayList();
+		tables.add(table);
+	}
 	public void setTables(Collection newTables) {
 		if(tables == null)
 			tables = new ArrayList();
@@ -42,5 +50,15 @@ public class DatabaseModel {
 			System.out.println("Database model has table: "+tmp.getName());
 		}
 	}
+	}
+	public Collection getTables(String name) {
+		ArrayList result = new ArrayList();
+		Iterator ite = tables.iterator();
+		while(ite.hasNext()) {
+			Table table = (Table)ite.next();
+			if(table.getSchema().equals(name))
+				result.add(table);
+		}
+		return result;
 	}
 }

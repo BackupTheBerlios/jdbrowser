@@ -1,6 +1,7 @@
 package helpers;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -44,11 +45,22 @@ public class ConfigReaderWriter {
 	}
 	public static void addNewConfigToFile(DataSourceConfig newdsc) {
 		ArrayList databases = getConfiguredDatabases();
+		if(databases == null)
+			databases = new ArrayList();
 		databases.add(newdsc);
 		WriteConfig(databases);
 	}
 	
 	private static void WriteConfig(ArrayList databases) {
+		File f = new File("config.xml");
+		if(!f.exists()) {
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+			
 		XStream xstream = new XStream();
 		xstream.alias("database", DataSourceConfig.class);
 

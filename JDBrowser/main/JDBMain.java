@@ -35,6 +35,8 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.ToolButtonEvent;
 import org.gnu.gtk.event.ToolButtonListener;
 
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
@@ -70,6 +72,7 @@ public class JDBMain implements ToolButtonListener {
 
 	public JDBMain() throws FileNotFoundException, GladeXMLException, IOException {
 		ReadConfig();
+		
 		gladeApp = new LibGlade("glade/jdbmain.glade", this);
 		addWindowCloser();
 		
@@ -227,6 +230,7 @@ public class JDBMain implements ToolButtonListener {
 		TextBuffer buf = new TextBuffer();
 		buf.setText(text);
 		textview.setBuffer(buf);
+		errorwindow.setDefaultSize(400,300);
 		errorwindow.show();
 	}
 }

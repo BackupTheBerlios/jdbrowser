@@ -1,5 +1,7 @@
 package main;
 
+import helpers.DataModelHelper;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -188,6 +190,9 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 				TreeIter databaseconfig = ls.getIter(tp.toString());
 				// ls.setData("databaseinfo_"+dsc.getAlias(), dsc);
 				// ls.setValue(databaseconfig, ColData, dsc.getAlias());
+				DatabaseModel dbmodel = new DatabaseModel();
+				dbmodel.setDatabasename(tp.toString());
+
 				while (dbs.next()) {
 					TreeIter dbrow = ls.appendRow(databaseconfig);
 					ls.setValue(dbrow, ColData, dbs.getString(1));
@@ -198,16 +203,14 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					String[] types = { "TABLE" };
 					ResultSet tables = dbmeta.getTables("", dbs.getString(1), "%", types);
 					
-					DatabaseModel dbmodel = new DatabaseModel();
-					dbmodel.setDatabasename(dbs.getString(1));
 					while (tables.next()) {
 						tablesrow = ls.appendRow(dbrow);
 						// System.out.println(tables.getString(3));
 						ls.setValue(tablesrow, ColData, tables.getString(3));
-						dbmodel.addTable(tables.getString(3));
+						dbmodel.addTable(tables.getString(3), dbs.getString(1));
 					}
-					
 					dbmodel.dumpTables();
+					DataModelHelper.setModel(dbmodel);
 					tables.close();
 				}
 			} else {
@@ -258,12 +261,14 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 
 	public void createDatbaseListInView() {
 		ArrayList databases = JDBMain.getConfiguredDatabases();
+		if(databases != null) {
 		for (int i = 0; i < databases.size(); i++) {
 			DataSourceConfig dsc = (DataSourceConfig) databases.get(i);
 			TreeIter databaseconfig = ls.appendRow(null);
 			ls.setData("databaseinfo_" + dsc.getAlias(), dsc);
 			ls.setData("isSchemaRead", new Boolean(true));
 			ls.setValue(databaseconfig, ColData, dsc.getAlias());
+		}
 		}
 		list.showAll();
 	}
