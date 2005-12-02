@@ -2,14 +2,12 @@ package helpers;
 
 import org.gnu.glib.Handle;
 import org.gnu.gtk.CellRendererText;
-import org.gnu.gtk.Combo;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
-import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeViewColumn;
 
 public class ComboBoxHelper extends ComboBox {

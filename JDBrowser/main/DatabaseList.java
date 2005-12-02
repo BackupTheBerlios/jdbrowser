@@ -8,15 +8,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import model.DatabaseModel;
 
 import org.gnu.gtk.CellRendererText;
-import org.gnu.gtk.Clipboard;
-import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.TreeIter;
@@ -31,7 +26,6 @@ import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
 import config.DataSourceConfig;
-import config.DataSourceConfigUI;
 
 public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 	TreeView list;
@@ -44,8 +38,8 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 
 	public DatabaseList(TreeView list) {
 		this.list = list;
-		this.list.getSelection().addListener((TreeSelectionListener) this);
-		this.list.addListener((TreeViewListener) this);
+		this.list.getSelection().addListener(this);
+		this.list.addListener(this);
 	}
 
 	public void initTable(TreeView sqltreeview) {
