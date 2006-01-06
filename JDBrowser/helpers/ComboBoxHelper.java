@@ -48,4 +48,11 @@ public class ComboBoxHelper extends ComboBox {
 	public Object getData(String searchvalue) {
 		return ls.getData(searchvalue);
 	}
+
+	public ListStore getListStore() {
+		return ls; 
+	}
+	public DataColumnString getDataColumn() {
+		return ColData;
+	}
 }

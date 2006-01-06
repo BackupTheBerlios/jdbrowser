@@ -36,6 +36,8 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 
 	DataColumnString ColData;
 
+	private int DB_LEVEL = 2;
+
 	public DatabaseList(TreeView list) {
 		this.list = list;
 		this.list.getSelection().addListener(this);
@@ -63,101 +65,6 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 		list.setSearchDataColumn(ColData);
 		/* append columns */
 		list.appendColumn(col2);
-	}
-
-	public void addToTable(byte[] image, String data) {
-		DatabaseMetaData dbmeta = null;
-		ResultSet dbs = null;
-		Connection conn = null;
-		try {
-
-			ArrayList databases = JDBMain.getConfiguredDatabases();
-			for (int i = 0; i < databases.size(); i++) {
-				DataSourceConfig dsc = (DataSourceConfig) databases.get(i);
-
-				Class.forName(dsc.getDriver());
-				// Connection mysql = DriverManager.getConnection(JDBMain.DBURL,
-				// JDBMain.DBUSER, JDBMain.DBPASSWORD);
-				try {
-					System.out.println(dsc.getUrl() + "\t" + dsc.getUserid() + "\t" + dsc.getPassword());
-					conn = DriverManager.getConnection(dsc.getUrl(), dsc.getUserid(), dsc.getPassword());
-					dbmeta = conn.getMetaData();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				if (dbmeta.supportsSchemasInTableDefinitions()) { 
-					// mainly oracle
-					System.out.println("Runnig on : " + dbmeta.getDatabaseProductName());
-					dbs = dbmeta.getSchemas();
-
-
-					TreeIter databaseconfig = ls.appendRow(null);
-					ls.setData("databaseinfo_" + dsc.getAlias(), dsc);
-					ls.setData("isSchemaRead", new Boolean(true));
-					ls.setValue(databaseconfig, ColData, dsc.getAlias());
-					while (dbs.next()) {
-						TreeIter dbrow = ls.appendRow(databaseconfig);
-						ls.setValue(dbrow, ColData, dbs.getString(1));
-						// SqlView.getCombobox_database().appendText(""+dbs.getString(1));
-						SqlView.getCombobox_database().addData(dbs.getString(1), "" + dbs.getString(1), dsc);
-
-						TreeIter tablesrow;
-						String[] types = { "TABLE" };
-						ResultSet tables = dbmeta.getTables("", dbs.getString(1), "%", types);
-
-						while (tables.next()) {
-							tablesrow = ls.appendRow(dbrow);
-							// System.out.println(tables.getString(3));
-							ls.setValue(tablesrow, ColData, tables.getString(3));
-
-						}
-						tables.close();
-
-						
-					}
-				} else {
-					System.out.println("Runnig on witn no schemas : " + dbmeta.getDatabaseProductName());
-					String[] types = { "TABLE" };
-					dbs = dbmeta.getCatalogs();
-
-					TreeIter databaseconfig = ls.appendRow(null);
-
-					ls.setValue(databaseconfig, ColData, dsc.getAlias());
-					ls.setData("databaseinfo_" + dsc.getAlias(), dsc);
-					while (dbs.next()) {
-						TreeIter dbrow = ls.appendRow(databaseconfig);
-						ls.setValue(dbrow, ColData, dbs.getString(1));
-						SqlView.getCombobox_database().addData(dbs.getString(1), "" + dbs.getString(1), dsc);
-
-						TreeIter tablesrow;
-						// System.out.println(dbs.getString(1));
-						ResultSet tables = dbmeta.getTables(dbs.getString(1), "", "%", types);
-						while (tables.next()) {
-							tablesrow = ls.appendRow(dbrow);
-							// System.out.println(tables.getString(3));
-							ls.setValue(tablesrow, ColData, tables.getString(3));
-						}
-						tables.close();
-						
-					}
-				}
-			}
-
-			System.out.println(SqlView.getCombobox_database().getData("smatest"));
-			list.showAll();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				dbs.close();
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
 	}
 
 	public void addToTable(DataSourceConfig dsc, TreePath tp) {
@@ -196,7 +103,7 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					TreeIter tablesrow;
 					String[] types = { "TABLE" };
 					ResultSet tables = dbmeta.getTables("", dbs.getString(1), "%", types);
-					
+
 					while (tables.next()) {
 						tablesrow = ls.appendRow(dbrow);
 						// System.out.println(tables.getString(3));
@@ -255,14 +162,14 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 
 	public void createDatbaseListInView() {
 		ArrayList databases = JDBMain.getConfiguredDatabases();
-		if(databases != null) {
-		for (int i = 0; i < databases.size(); i++) {
-			DataSourceConfig dsc = (DataSourceConfig) databases.get(i);
-			TreeIter databaseconfig = ls.appendRow(null);
-			ls.setData("databaseinfo_" + dsc.getAlias(), dsc);
-			ls.setData("isSchemaRead", new Boolean(true));
-			ls.setValue(databaseconfig, ColData, dsc.getAlias());
-		}
+		if (databases != null) {
+			for (int i = 0; i < databases.size(); i++) {
+				DataSourceConfig dsc = (DataSourceConfig) databases.get(i);
+				TreeIter databaseconfig = ls.appendRow(null);
+				ls.setData("databaseinfo_" + dsc.getAlias(), dsc);
+				ls.setData("isSchemaRead", new Boolean(true));
+				ls.setValue(databaseconfig, ColData, dsc.getAlias());
+			}
 		}
 		list.showAll();
 	}
@@ -284,7 +191,18 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					addToTable(dsc, tp[0]);
 				}
 			}
+
 		}
+
+		if (treeSelection.getSelectedRows()[0].getDepth() == DB_LEVEL) {
+			System.out.println("Yehaa..");
+			TreePath[] tp = treeSelection.getSelectedRows();
+			TreePath tp1 = tp[0];
+			TreeIter item1 = ls.getIter(tp1.toString());
+			String table = ls.getValue(item1, ColData);
+			SqlView.setCombobox(table);
+		}
+
 	}
 
 	public void treeViewEvent(TreeViewEvent event) {
@@ -309,7 +227,9 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					System.out.println(dsc.getUrl());
 					sqltreeview.addToTable(table, database, dsc);
 				}
+
 			}
+
 		}
 
 	}
