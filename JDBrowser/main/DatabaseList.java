@@ -189,6 +189,7 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					ls.setData("databaseinfo_" + dsc.getAlias(), dsc);
 					ls.setData("isSchemaRead", new Boolean(true));
 					addToTable(dsc, tp[0]);
+					list.expandRow(tp1, true);
 				}
 			}
 

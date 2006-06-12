@@ -1,23 +1,18 @@
 <list>
   <database>
-    <alias>wc prod on oracle</alias>
-    <url>jdbc:oracle:thin:@svend:1521:prod</url>
+    <alias>ECLUB Postgres Localhost</alias>
+    <url>jdbc:postgresql://localhost:5432/ECLUB2</url>
+    <driver>org.postgresql.Driver</driver>
+    <userid>eclub2</userid>
+    <password>secret</password>
+  </database>
+
+ <database>
+    <alias>TEST2 bigmama</alias>
+    <url>jdbc:oracle:thin:@192.168.146.236:1521:TEST2</url>
     <driver>oracle.jdbc.OracleDriver</driver>
     <userid>eclub2</userid>
     <password>secret</password>
   </database>
-  <database>
-    <alias>mysql</alias>
-    <url>jdbc:mysql://10.20.4.68:3306/test</url>
-    <driver>com.mysql.jdbc.Driver</driver>
-    <userid>root</userid>
-    <password></password>
-  </database>
-  <database>
-    <alias>WC Mysql</alias>
-    <url>jdbc:mysql://10.20.4.68:3306/test</url>
-    <driver>com.mysql.jdbc.Driver</driver>
-    <userid>root</userid>
-    <password></password>
-  </database>
+
 </list>

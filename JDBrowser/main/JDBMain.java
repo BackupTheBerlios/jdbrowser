@@ -30,12 +30,8 @@ import org.gnu.gtk.VBox;
 import org.gnu.gtk.Viewport;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
-import org.gnu.gtk.event.LifeCycleEvent;
-import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.ToolButtonEvent;
 import org.gnu.gtk.event.ToolButtonListener;
-
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -81,7 +77,7 @@ public class JDBMain implements ToolButtonListener {
 		DatabaseList dblist = new DatabaseList((TreeView) gladeApp.getWidget("databaselist"));
 		
 		TreeView sqltreeview = (TreeView) gladeApp.getWidget("sqltreeview");
-		statusbar = (AppBar) gladeApp.getWidget("statusbar");
+		statusbar = (AppBar) gladeApp.getWidget("appbar1");
 		statusbar.setStatusText("Appliction loaded");
 		
 
@@ -147,18 +143,18 @@ public class JDBMain implements ToolButtonListener {
 	}
 
 	public void addWindowCloser() {
-		Window window = (Window) gladeApp.getWidget("mainwindow");
-		window.addListener(new LifeCycleListener() {
-			public void lifeCycleEvent(LifeCycleEvent event) {
-			}
-
-			public boolean lifeCycleQuery(LifeCycleEvent event) {
-				Gtk.mainQuit();
-				return false;
-			}
-		});
-		window.setDefaultSize(600, 600);
-		window.setMinimumSize(800, 600);
+//		Window window = (Window) gladeApp.getWidget("mainwindow");
+//		window.addListener(new LifeCycleListener() {
+//			public void lifeCycleEvent(LifeCycleEvent event) {
+//			}
+//
+//			public boolean lifeCycleQuery(LifeCycleEvent event) {
+//				Gtk.mainQuit();
+//				return false;
+//			}
+//		});
+//		window.setDefaultSize(600, 600);
+//		window.setMinimumSize(800, 600);
 	}
 
 	public void initTable() {
