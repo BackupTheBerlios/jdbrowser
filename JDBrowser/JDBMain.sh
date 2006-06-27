@@ -6,6 +6,6 @@ JAVA_GLIB=`java-config -p \`java-config -l | grep -i glib-java | awk '{print $1}
 
 echo $JAVA_GNOME
 cd ~/workspace.newstable/JDBrowser
-java -Djava.library.path=/usr/lib -classpath /usr/share/jdbc-mysql/lib/jdbc-mysql.jar:$JAVA_GTK:$JAVA_GNOME:.:$JAVA_GLADE:$JAVA_GLIB:/home/sorenm/workspace.newstable/eclub2-srv/tools/ojdbc14.jar:lib/xstream-1.1.2.jar main.JDBMain
+java -Djava.library.path=/usr/lib -classpath /usr/share/jdbc-mysql/lib/jdbc-mysql.jar:$JAVA_GTK:$JAVA_GNOME:.:$JAVA_GLADE:$JAVA_GLIB:/home/sorenm/workspace.newstable/eclub2-srv/tools/ojdbc14.jar:lib/xstream-1.1.2.jar:lib/log4j.jar main.JDBMain
 cd -
 

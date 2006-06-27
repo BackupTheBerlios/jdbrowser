@@ -1,5 +1,7 @@
 package main;
 
+import helpers.InfoWindow;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,6 +32,8 @@ import org.gnu.gtk.VBox;
 import org.gnu.gtk.Viewport;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.ToolButtonEvent;
 import org.gnu.gtk.event.ToolButtonListener;
 
@@ -143,18 +147,18 @@ public class JDBMain implements ToolButtonListener {
 	}
 
 	public void addWindowCloser() {
-//		Window window = (Window) gladeApp.getWidget("mainwindow");
-//		window.addListener(new LifeCycleListener() {
-//			public void lifeCycleEvent(LifeCycleEvent event) {
-//			}
-//
-//			public boolean lifeCycleQuery(LifeCycleEvent event) {
-//				Gtk.mainQuit();
-//				return false;
-//			}
-//		});
-//		window.setDefaultSize(600, 600);
-//		window.setMinimumSize(800, 600);
+		Window window = (Window) gladeApp.getWidget("mainwindow");
+		window.addListener(new LifeCycleListener() {
+			public void lifeCycleEvent(LifeCycleEvent event) {
+			}
+
+			public boolean lifeCycleQuery(LifeCycleEvent event) {
+				Gtk.mainQuit();
+				return false;
+			}
+		});
+		window.setDefaultSize(600, 600);
+		window.setMinimumSize(800, 600);
 	}
 
 	public void initTable() {
@@ -220,13 +224,36 @@ public class JDBMain implements ToolButtonListener {
 	}
 	
 	public static void showErrorDialog(String text) {
-		Window errorwindow = (Window) gladeApp.getWidget("errorwindow");
+		final Window errorwindow = (Window) gladeApp.getWidget("errorwindow");
 		TextView textview = (TextView) gladeApp.getWidget("errortextview");
 		textview.setEditable(false);
 		TextBuffer buf = new TextBuffer();
 		buf.setText(text);
 		textview.setBuffer(buf);
 		errorwindow.setDefaultSize(400,300);
+		
+		errorwindow.addListener(new LifeCycleListener() {
+			public void lifeCycleEvent(LifeCycleEvent event) {
+			}
+
+			public boolean lifeCycleQuery(LifeCycleEvent event) {
+				errorwindow.destroy();
+				return false;
+			}
+		});
+		
 		errorwindow.show();
+	}
+	
+	public static Window getInforDialog(String text) {
+		Window infowin = (Window) gladeApp.getWidget("errorwindow");
+		TextView textview = (TextView) gladeApp.getWidget("errortextview");
+		textview.setEditable(false);
+		TextBuffer buf = new TextBuffer();
+		buf.setText(text);
+		textview.setBuffer(buf);
+		infowin.setDefaultSize(400,300);
+		return infowin;
+		
 	}
 }

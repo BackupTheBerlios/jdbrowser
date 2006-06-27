@@ -1,19 +1,24 @@
 package main;
 
-import java.util.StringTokenizer;
-
 import helpers.ComboBoxHelper;
 import helpers.CompletionHelper;
 import helpers.DataModelHelper;
 
-import model.DatabaseModel;
+import java.util.StringTokenizer;
 
+import model.DatabaseModel;
+import model.Table;
+
+import org.apache.log4j.Logger;
+import org.gnu.gdk.ModifierType;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
+import org.gnu.gtk.TreeSelection;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
@@ -23,13 +28,13 @@ import org.gnu.gtk.event.KeyListener;
 import config.DataSourceConfig;
 
 public class SqlView implements KeyListener {
+	Logger log = Logger.getLogger(SqlView.class);
+
 	TextView view;
 
 	TreeView sqltreeview;
 
 	static DatabaseList dblist;
-
-	private boolean controlDown;
 
 	static ComboBoxHelper cb_database;
 
@@ -51,11 +56,9 @@ public class SqlView implements KeyListener {
 	private class ExecuteButtonListener implements ButtonListener {
 		public void buttonEvent(ButtonEvent event) {
 			if (event.isOfType(ButtonEvent.Type.CLICK)) {
-				System.out.println("click");
 				TextBuffer textbuffer = view.getBuffer();
 				String test = textbuffer.getText(textbuffer.getStartIter(), textbuffer.getEndIter(), true);
-				System.out.println(test);
-				System.out.println("-------->" + getCombobox_database().getActiveText());
+				log.debug("-------->" + getCombobox_database().getActiveText());
 				DataSourceConfig dsc = (DataSourceConfig) getCombobox_database().getData(getCombobox_database().getActiveText());
 				if (!(SqlView.cb_database.getActiveText() == null || SqlView.cb_database.getActiveText().equals("")))
 					DatabaseList.getSqltreeview().addDataToTable(test, SqlView.cb_database.getActiveText(), dsc);
@@ -103,10 +106,10 @@ public class SqlView implements KeyListener {
 		return cb_table;
 	}
 
-	public boolean keyEvent(KeyEvent event) {
-		System.out.println(controlDown + " - " + event.getKeyval() + "\t" + event.getModifierKey().getValue());
+public boolean keyEvent(KeyEvent event) {
+		ModifierType modkey = event.getModifierKey();
 		if (event.getType().getName().equals("KEY_PRESSED")) {
-			if (event.getKeyval() == 32 && event.getModifierKey().getValue() == 4) {
+			if (event.getKeyval() == 32 && event.getModifierKey().getValue() == 20) {
 				System.out.println("Show table compleation list..");
 				DatabaseModel model = DataModelHelper.getModel();
 
@@ -120,14 +123,38 @@ public class SqlView implements KeyListener {
 				System.out.println("Command: " + command);
 				if (command.equalsIgnoreCase("FROM")) {
 					System.out.println("Running completion");
-					CompletionHelper.addToWindow(model.getTables(getCombobox_database().getActiveText()), view.getBuffer());
+					CompletionHelper comp = new CompletionHelper(model.getTables(getCombobox_database().getActiveText()));
+					comp.showAll();
+					comp.run();
+//					Table table = model.getTable(comp.getUserselection());
+					view.getBuffer().insertText(" "+comp.getUserselection());				
+				} else
+					if (command.equalsIgnoreCase("WHERE")) {
+						System.out.println("Running completion");
+						CompletionHelper comp = new CompletionHelper(model.getTable(getTableNameFromSql()).getColumns());
+						comp.showAll();
+						comp.run();
+						view.getBuffer().insertText(" "+comp.getUserselection());
 
-				}
-
+					}
 			}
 		}
 
 		return false;
+	}	private String getTableNameFromSql() {
+		TextBuffer buf = view.getBuffer();
+		String sql = buf.getText(buf.getStartIter(), buf.getEndIter(), true);
+		sql = sql.toUpperCase();
+		StringTokenizer st = new StringTokenizer(sql, " ");
+		while (st.hasMoreTokens()) {
+			String tmp = st.nextToken();
+			if ("FROM".equalsIgnoreCase(tmp)) {
+				String table = st.nextToken();
+				System.out.println("Found table :" + table);
+				return table.trim();
+			}
+		}
+		return null;
 	}
 
 }

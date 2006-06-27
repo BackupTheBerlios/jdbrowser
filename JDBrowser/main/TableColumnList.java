@@ -1,5 +1,9 @@
 package main;
 
+import helpers.InfoWindow;
+import helpers.ShowProgress;
+import helpers.SqlRunner;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -9,13 +13,16 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.Dialog;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
+import org.gnu.gtk.Window;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
@@ -26,6 +33,7 @@ import org.gnu.gtk.event.TreeViewListener;
 import config.DataSourceConfig;
 
 public class TableColumnList implements TreeSelectionListener, TreeViewListener, TreeViewColumnListener {
+	Logger log = Logger.getLogger(TableColumnList.class);
 	TreeView list;
 
 	ListStore ls;
@@ -153,13 +161,14 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 		}
 		try {
 			long start = System.currentTimeMillis();
-			Class.forName(database.getDriver());
-			Connection mysql = DriverManager.getConnection(database.getUrl(), database.getUserid(), database.getPassword());
+			log.debug(database.getDriver());
+			SqlRunner sqlrun = new SqlRunner(database);
 			System.out.println("Getting columns for table: " + tablename);
 			if (sql == null)
 				sql = "select * from " + tablename;
-			mysql.setCatalog(db);
-			ResultSet rs = mysql.createStatement().executeQuery(sql);
+			sqlrun.setCatalog(db);
+
+			ResultSet rs = sqlrun.executeQuery(sql);
 			addColumnsFromResultSet(rs);
 			int counter = 0;
 			while (rs.next()) {
@@ -175,11 +184,8 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 			long end = System.currentTimeMillis();
 			JDBMain.setStatusbarMessage("Got "+counter+" rows in "+(end-start)+" milliseconds");
 			rs.close();
-			mysql.close();
+			sqlrun.close();
 			list.showAll();
-		} catch (ClassNotFoundException e) {
-			JDBMain.showErrorDialog(e.getMessage());
-			e.printStackTrace();
 		} catch (SQLException e) {
 			JDBMain.showErrorDialog(e.getMessage());
 			e.printStackTrace();

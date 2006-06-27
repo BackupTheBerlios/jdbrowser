@@ -1,18 +1,23 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class Table implements TableAndColumnInterface {
-	String name;
-	String schema;
-	Collection Columns;
+	private String name;
+	private String schema;
+	private Collection Columns;
 
 	public Collection getColumns() {
 		return Columns;
 	}
 
 	public void addColumn(String columnName) {
-		Columns.add(columnName);
+		Column tcif = new Column();
+		tcif.setName(columnName);
+		if(Columns == null)
+			Columns = new ArrayList();
+		Columns.add(tcif);
 	}
 	
 	public void setColumns(Collection columns) {

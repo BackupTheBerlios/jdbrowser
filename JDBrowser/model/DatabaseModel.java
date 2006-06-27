@@ -23,6 +23,12 @@ public class DatabaseModel {
 	public Collection getTables() {
 		return tables;
 	}
+	
+	public void addTable(Table tablename) {
+		if(tables == null)
+			tables = new ArrayList();
+		tables.add(tablename);
+	}
 	public void addTable(String tablename) {
 		Table table = new Table();
 		table.setName(tablename);
@@ -30,10 +36,11 @@ public class DatabaseModel {
 			tables = new ArrayList();
 		tables.add(table);
 	}
-	public void addTable(String tablename, String schema) {
+	public void addTable(String tablename, String schema, Collection columns) {
 		Table table = new Table();
 		table.setName(tablename);
 		table.setSchema(schema);
+		table.setColumns(columns);
 		if(tables == null)
 			tables = new ArrayList();
 		tables.add(table);
@@ -51,6 +58,14 @@ public class DatabaseModel {
 		}
 	}
 	}
+	
+	
+	/**
+	 * Get tables from a schema
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public Collection getTables(String name) {
 		ArrayList result = new ArrayList();
 		Iterator ite = tables.iterator();
@@ -61,4 +76,22 @@ public class DatabaseModel {
 		}
 		return result;
 	}
+	
+	/**
+	 * Get  a table 
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Table getTable(String tablename) {
+		ArrayList result = new ArrayList();
+		Iterator ite = tables.iterator();
+		while(ite.hasNext()) {
+			Table table = (Table)ite.next();
+			if(table.getName().equals(tablename))
+				return table;
+		}
+		return null;
+	}
+	
 }

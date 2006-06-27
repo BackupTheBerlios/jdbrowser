@@ -8,8 +8,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 
+import model.Column;
 import model.DatabaseModel;
+import model.Table;
+import model.TableAndColumnInterface;
 
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
@@ -49,14 +53,9 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 		ColData = new DataColumnString();
 		ls = new TreeStore(new DataColumn[] { ColData });
 
-		list.setEnableSearch(true); /*
-									 * allows to use keyboard to search items
-									 * matching the pressed keys
-									 */
-
-		list.setAlternateRowColor(true); /* no comments smile */
-		list.setModel(ls);
-
+		list.setEnableSearch(true); 
+		list.setAlternateRowColor(true); 
+		
 		TreeViewColumn col2 = new TreeViewColumn();
 		CellRendererText render2 = new CellRendererText();
 		col2.packStart(render2, true);
@@ -65,6 +64,8 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 		list.setSearchDataColumn(ColData);
 		/* append columns */
 		list.appendColumn(col2);
+		list.setModel(ls);
+
 	}
 
 	public void addToTable(DataSourceConfig dsc, TreePath tp) {
@@ -74,8 +75,6 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 		try {
 			System.out.println(dsc.getDriver());
 			Class.forName(dsc.getDriver());
-			// Connection mysql = DriverManager.getConnection(JDBMain.DBURL,
-			// JDBMain.DBUSER, JDBMain.DBPASSWORD);
 			try {
 				System.out.println(dsc.getUrl() + "\t" + dsc.getUserid() + "\t" + dsc.getPassword());
 				conn = DriverManager.getConnection(dsc.getUrl(), dsc.getUserid(), dsc.getPassword());
@@ -89,8 +88,7 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 				dbs = dbmeta.getSchemas();
 
 				TreeIter databaseconfig = ls.getIter(tp.toString());
-				// ls.setData("databaseinfo_"+dsc.getAlias(), dsc);
-				// ls.setValue(databaseconfig, ColData, dsc.getAlias());
+
 				DatabaseModel dbmodel = new DatabaseModel();
 				dbmodel.setDatabasename(tp.toString());
 
@@ -105,10 +103,19 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					ResultSet tables = dbmeta.getTables("", dbs.getString(1), "%", types);
 
 					while (tables.next()) {
+						Table table  = new Table();
+						
 						tablesrow = ls.appendRow(dbrow);
-						// System.out.println(tables.getString(3));
 						ls.setValue(tablesrow, ColData, tables.getString(3));
-						dbmodel.addTable(tables.getString(3), dbs.getString(1));
+						
+						ResultSet columns = dbmeta.getColumns("", dbs.getString(1),tables.getString(3), "%");
+						while(columns.next()) {
+							table.addColumn(columns.getString(4));
+						}
+						table.setSchema(dbs.getString(1));
+						table.setName(tables.getString(3));
+						
+						dbmodel.addTable(table);
 					}
 					dbmodel.dumpTables();
 					DataModelHelper.setModel(dbmodel);
