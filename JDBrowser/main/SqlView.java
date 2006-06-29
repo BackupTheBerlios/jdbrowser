@@ -9,7 +9,6 @@ import java.util.StringTokenizer;
 import model.DatabaseModel;
 
 import org.apache.log4j.Logger;
-import org.gnu.gdk.ModifierType;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.ListStore;
@@ -41,6 +40,7 @@ public class SqlView implements KeyListener {
 	public SqlView() {
 		Button execute = (Button) JDBMain.getGladeApp().getWidget("execute_sql_button");
 		view = (TextView) JDBMain.getGladeApp().getWidget("sqltextview");
+//		view = new TextView();
 		view.setCursorVisible(true);
 		view.setEditable(true);
 		view.addListener(this);
@@ -109,7 +109,7 @@ public class SqlView implements KeyListener {
 		log.debug("-->"+event.getModifierKey().getValue());
 		if (event.getType().getName().equals("KEY_PRESSED")) {
 			if (event.getKeyval() == 32 && (event.getModifierKey().getValue() == 20 || event.getModifierKey().getValue() == 4)) {
-				System.out.println("Show table compleation list..");
+				log.debug("Show table compleation list..");
 				DatabaseModel model = DataModelHelper.getModel();
 
 				TextBuffer textbuffer = view.getBuffer();
@@ -119,16 +119,16 @@ public class SqlView implements KeyListener {
 				while (st.hasMoreTokens()) {
 					command = st.nextToken();
 				}
-				System.out.println("Command: " + command);
+				log.debug("Command: " + command);
 				if (command.equalsIgnoreCase("FROM")) {
-					System.out.println("Running completion");
+					log.debug("Running completion");
 					CompletionHelper comp = new CompletionHelper(model.getTables(getCombobox_database().getActiveText()));
 					comp.showAll();
 					comp.run();
 					// Table table = model.getTable(comp.getUserselection());
 					view.getBuffer().insertText(" " + comp.getUserselection());
 				} else if (command.equalsIgnoreCase("WHERE")) {
-					System.out.println("Running completion");
+					log.debug("Running completion");
 					CompletionHelper comp = new CompletionHelper(model.getTable(getTableNameFromSql()).getColumns());
 					comp.showAll();
 					comp.run();
@@ -150,7 +150,7 @@ public class SqlView implements KeyListener {
 			String tmp = st.nextToken();
 			if ("FROM".equalsIgnoreCase(tmp)) {
 				String table = st.nextToken();
-				System.out.println("Found table :" + table);
+				log.debug("Found table :" + table);
 				return table.trim();
 			}
 		}

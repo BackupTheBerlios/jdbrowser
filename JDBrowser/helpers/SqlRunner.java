@@ -5,9 +5,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.log4j.Logger;
+
 import config.DataSourceConfig;
 
 public class SqlRunner extends Thread {
+	Logger log = Logger.getLogger(SqlRunner.class);
 	Connection conn;
 
 	private boolean done = false;
@@ -35,6 +38,7 @@ public class SqlRunner extends Thread {
 	public ResultSet executeQuery(final String sql) {
 		ResultSet rs;
 		try {
+			log.debug("About to execute: "+sql);
 			rs = conn.createStatement().executeQuery(sql);
 			return rs;
 		} catch (SQLException e) {

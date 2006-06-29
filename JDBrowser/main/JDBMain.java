@@ -12,16 +12,21 @@ import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gnome.AppBar;
 import org.gnu.gnome.Program;
+import org.gnu.gtk.ButtonsType;
 import org.gnu.gtk.CellRendererPixbuf;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnPixbuf;
 import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.Dialog;
+import org.gnu.gtk.DialogFlags;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.MenuItem;
+import org.gnu.gtk.MessageDialog;
+import org.gnu.gtk.MessageType;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.ToolButton;
@@ -32,6 +37,7 @@ import org.gnu.gtk.VBox;
 import org.gnu.gtk.Viewport;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MenuItemEvent;
@@ -72,15 +78,16 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 	public static String DBPASSWORD = "";
 
 	static AppBar statusbar;
-
+	private static Window window;
 	public JDBMain() throws FileNotFoundException, GladeXMLException, IOException {
 		BasicConfigurator.configure();
 		readConfig();
 
 		gladeApp = new LibGlade("glade/jdbmain.glade", this);
+		window = (Window) gladeApp.getWidget("mainwindow");
 		addWindowCloser();
 
-		TextView sqlviewer = (TextView) gladeApp.getWidget("sqltextview");
+//		TextView sqlviewer = (TextView) gladeApp.getWidget("sqltextview");
 		SqlView sqlview = new SqlView();
 		DatabaseList dblist = new DatabaseList((TreeView) gladeApp.getWidget("databaselist"));
 
@@ -125,7 +132,7 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 	}
 
 	public void addWindowCloser() {
-		Window window = (Window) gladeApp.getWidget("mainwindow");
+		
 		window.addListener(new LifeCycleListener() {
 			public void lifeCycleEvent(LifeCycleEvent event) {
 			}
@@ -203,25 +210,18 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 	}
 
 	public static void showErrorDialog(String text) {
-		final Window errorwindow = (Window) gladeApp.getWidget("errorwindow");
-		TextView textview = (TextView) gladeApp.getWidget("errortextview");
-		textview.setEditable(false);
-		TextBuffer buf = new TextBuffer();
-		buf.setText(text);
-		textview.setBuffer(buf);
-		errorwindow.setDefaultSize(400, 300);
-
-		errorwindow.addListener(new LifeCycleListener() {
+		final MessageDialog dialog = new MessageDialog(window, DialogFlags.MODAL,MessageType.ERROR, ButtonsType.OK, text, true);
+		dialog.setTitle("Error");
+		dialog.run();
+		dialog.addListener(new LifeCycleListener() {
 			public void lifeCycleEvent(LifeCycleEvent event) {
 			}
 
 			public boolean lifeCycleQuery(LifeCycleEvent event) {
-				errorwindow.destroy();
+				dialog.destroy();
 				return false;
 			}
 		});
-
-		errorwindow.show();
 	}
 
 	public static Window getInforDialog(String text) {
