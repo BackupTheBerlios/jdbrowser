@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.BasicConfigurator;
 import org.gnu.gdk.Pixbuf;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
@@ -73,7 +74,8 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 	static AppBar statusbar;
 
 	public JDBMain() throws FileNotFoundException, GladeXMLException, IOException {
-		ReadConfig();
+		BasicConfigurator.configure();
+		readConfig();
 
 		gladeApp = new LibGlade("glade/jdbmain.glade", this);
 		addWindowCloser();
@@ -91,12 +93,13 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 
 		ToolButton newbutton = (ToolButton) gladeApp.getWidget("new_button");
 		newbutton.addListener(this);
-
-		dblist.initTable(sqltreeview);
+		
 		dblist.createDatbaseListInView();
+		dblist.initTable(sqltreeview);
+		
 	}
 
-	private void ReadConfig() {
+	private void readConfig() {
 		XStream xstream = new XStream(new DomDriver());
 		xstream.alias("database", DataSourceConfig.class);
 		try {
@@ -108,36 +111,7 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 		}
 	}
 
-	public static ArrayList getConfiguredDatabases() {
-		XStream xstream = new XStream(new DomDriver());
-		xstream.alias("database", DataSourceConfig.class);
-		try {
-			return (ArrayList) xstream.fromXML(new FileReader("config.xml"));
-			// DataSourceConfig dsc = (DataSourceConfig )databases.get(0);
-			// System.out.println("Config says: "+dsc.getDriver());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static DataSourceConfig getConfiguredDatabases(String alias) {
-		XStream xstream = new XStream(new DomDriver());
-		xstream.alias("database", DataSourceConfig.class);
-		try {
-			ArrayList databases = (ArrayList) xstream.fromXML(new FileReader("config.xml"));
-			for (int i = 0; i < databases.size(); i++) {
-				DataSourceConfig dsc = (DataSourceConfig) databases.get(i);
-				if (dsc.getAlias().equals(alias))
-					return dsc;
-			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
+	
 	public static void main(String[] args) {
 		// new ReadConfig();
 		try {
@@ -165,34 +139,34 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 		window.setMinimumSize(800, 600);
 	}
 
-	public void initTable() {
-		ColThumbImage = new DataColumnPixbuf();
-		ColData = new DataColumnString();
-		ls = new ListStore(new DataColumn[] { ColThumbImage, ColData });
-
-		resulttable.setEnableSearch(true); /*
-											 * allows to use keyboard to search
-											 * items matching the pressed keys
-											 */
-
-		resulttable.setAlternateRowColor(true); /* no comments smile */
-		resulttable.setModel(ls);
-
-		TreeViewColumn col0 = new TreeViewColumn();
-		CellRendererPixbuf render1 = new CellRendererPixbuf();
-		col0.packStart(render1, true);
-		col0.addAttributeMapping(render1, CellRendererPixbuf.Attribute.PIXBUF, ColThumbImage);
-
-		TreeViewColumn col2 = new TreeViewColumn();
-		CellRendererText render2 = new CellRendererText();
-		col2.packStart(render2, true);
-		col2.addAttributeMapping(render2, CellRendererText.Attribute.MARKUP, ColData);
-
-		resulttable.setSearchDataColumn(ColData);
-		/* append columns */
-		resulttable.appendColumn(col0);
-		resulttable.appendColumn(col2);
-	}
+//	public void initTable() {
+//		ColThumbImage = new DataColumnPixbuf();
+//		ColData = new DataColumnString();
+//		ls = new ListStore(new DataColumn[] { ColThumbImage, ColData });
+//
+//		resulttable.setEnableSearch(true); /*
+//											 * allows to use keyboard to search
+//											 * items matching the pressed keys
+//											 */
+//
+//		resulttable.setAlternateRowColor(true); /* no comments smile */
+//		resulttable.setModel(ls);
+//
+//		TreeViewColumn col0 = new TreeViewColumn();
+//		CellRendererPixbuf render1 = new CellRendererPixbuf();
+//		col0.packStart(render1, true);
+//		col0.addAttributeMapping(render1, CellRendererPixbuf.Attribute.PIXBUF, ColThumbImage);
+//
+//		TreeViewColumn col2 = new TreeViewColumn();
+//		CellRendererText render2 = new CellRendererText();
+//		col2.packStart(render2, true);
+//		col2.addAttributeMapping(render2, CellRendererText.Attribute.MARKUP, ColData);
+//
+//		resulttable.setSearchDataColumn(ColData);
+//		/* append columns */
+//		resulttable.appendColumn(col0);
+//		resulttable.appendColumn(col2);
+//	}
 
 	public void addToTable(byte[] image, String data) {
 		TreeIter row = ls.appendRow();

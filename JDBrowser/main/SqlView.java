@@ -104,9 +104,11 @@ public class SqlView implements KeyListener {
 	}
 
 	public boolean keyEvent(KeyEvent event) {
-		ModifierType modkey = event.getModifierKey();
+		log.debug(event.getString());
+		log.debug("-->"+event.getKeyval());
+		log.debug("-->"+event.getModifierKey().getValue());
 		if (event.getType().getName().equals("KEY_PRESSED")) {
-			if (event.getKeyval() == 32 && event.getModifierKey().getValue() == 20) {
+			if (event.getKeyval() == 32 && (event.getModifierKey().getValue() == 20 || event.getModifierKey().getValue() == 4)) {
 				System.out.println("Show table compleation list..");
 				DatabaseModel model = DataModelHelper.getModel();
 
