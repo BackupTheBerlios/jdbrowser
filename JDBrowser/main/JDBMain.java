@@ -1,7 +1,5 @@
 package main;
 
-import helpers.InfoWindow;
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,6 +11,7 @@ import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gnome.AppBar;
 import org.gnu.gnome.Program;
+import org.gnu.gtk.AboutDialog;
 import org.gnu.gtk.CellRendererPixbuf;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.ComboBox;
@@ -22,6 +21,7 @@ import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.ListStore;
+import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.ToolButton;
@@ -34,6 +34,8 @@ import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
+import org.gnu.gtk.event.MenuItemEvent;
+import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.ToolButtonEvent;
 import org.gnu.gtk.event.ToolButtonListener;
 
@@ -43,7 +45,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import config.DataSourceConfig;
 import config.DataSourceConfigUI;
 
-public class JDBMain implements ToolButtonListener {
+public class JDBMain implements ToolButtonListener, MenuItemListener {
 	public static String DB_DRIVER = null;
 
 	public static LibGlade gladeApp;
@@ -84,7 +86,9 @@ public class JDBMain implements ToolButtonListener {
 		statusbar = (AppBar) gladeApp.getWidget("appbar1");
 		statusbar.setStatusText("Appliction loaded");
 		
-
+		MenuItem aboutmenu = (MenuItem) gladeApp.getWidget("about1");
+		aboutmenu.addListener(this);
+		
 		ToolButton newbutton = (ToolButton) gladeApp.getWidget("new_button");
 		newbutton.addListener(this);
 
@@ -254,6 +258,15 @@ public class JDBMain implements ToolButtonListener {
 		textview.setBuffer(buf);
 		infowin.setDefaultSize(400,300);
 		return infowin;
+		
+	}
+
+	public void menuItemEvent(MenuItemEvent event) {
+		System.out.println(event.getType());
+		if("about1".equals(((Widget) event.getSource()).getName())) {
+			main.AboutDialog dialog = new main.AboutDialog();
+			dialog.run();
+		}
 		
 	}
 }
