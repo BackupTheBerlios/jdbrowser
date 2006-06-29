@@ -50,8 +50,9 @@ public class ComboBoxHelper extends ComboBox {
 	}
 
 	public ListStore getListStore() {
-		return ls; 
+		return ls;
 	}
+
 	public DataColumnString getDataColumn() {
 		return ColData;
 	}

@@ -12,23 +12,22 @@ public class InfoWindow {
 		win.setTitle("Information");
 		HBox box = new HBox(true, 0);
 		TextView textview = new TextView();
-		
-		
+
 		box.packStart(textview);
 		win.getDialogLayout().packStart(box);
-		
+
 		TextBuffer buf = new TextBuffer();
 		buf.setText(text);
 		textview.setBuffer(buf);
 		textview.setEditable(false);
-		
+
 		ProgressBar bar = new ProgressBar();
 		bar.pulse();
 		box.packStart(bar);
 		win.showAll();
-		
-//		 win.setDefaultResponse(0);
-//		 win.run();
+
+		// win.setDefaultResponse(0);
+		// win.run();
 		return win;
 	}
 

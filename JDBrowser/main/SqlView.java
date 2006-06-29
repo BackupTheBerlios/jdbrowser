@@ -7,7 +7,6 @@ import helpers.DataModelHelper;
 import java.util.StringTokenizer;
 
 import model.DatabaseModel;
-import model.Table;
 
 import org.apache.log4j.Logger;
 import org.gnu.gdk.ModifierType;
@@ -17,8 +16,6 @@ import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreePath;
-import org.gnu.gtk.TreeSelection;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
@@ -106,7 +103,7 @@ public class SqlView implements KeyListener {
 		return cb_table;
 	}
 
-public boolean keyEvent(KeyEvent event) {
+	public boolean keyEvent(KeyEvent event) {
 		ModifierType modkey = event.getModifierKey();
 		if (event.getType().getName().equals("KEY_PRESSED")) {
 			if (event.getKeyval() == 32 && event.getModifierKey().getValue() == 20) {
@@ -126,22 +123,23 @@ public boolean keyEvent(KeyEvent event) {
 					CompletionHelper comp = new CompletionHelper(model.getTables(getCombobox_database().getActiveText()));
 					comp.showAll();
 					comp.run();
-//					Table table = model.getTable(comp.getUserselection());
-					view.getBuffer().insertText(" "+comp.getUserselection());				
-				} else
-					if (command.equalsIgnoreCase("WHERE")) {
-						System.out.println("Running completion");
-						CompletionHelper comp = new CompletionHelper(model.getTable(getTableNameFromSql()).getColumns());
-						comp.showAll();
-						comp.run();
-						view.getBuffer().insertText(" "+comp.getUserselection());
+					// Table table = model.getTable(comp.getUserselection());
+					view.getBuffer().insertText(" " + comp.getUserselection());
+				} else if (command.equalsIgnoreCase("WHERE")) {
+					System.out.println("Running completion");
+					CompletionHelper comp = new CompletionHelper(model.getTable(getTableNameFromSql()).getColumns());
+					comp.showAll();
+					comp.run();
+					view.getBuffer().insertText(" " + comp.getUserselection());
 
-					}
+				}
 			}
 		}
 
 		return false;
-	}	private String getTableNameFromSql() {
+	}
+
+	private String getTableNameFromSql() {
 		TextBuffer buf = view.getBuffer();
 		String sql = buf.getText(buf.getStartIter(), buf.getEndIter(), true);
 		sql = sql.toUpperCase();

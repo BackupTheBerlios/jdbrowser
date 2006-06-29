@@ -8,12 +8,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 
-import model.Column;
 import model.DatabaseModel;
 import model.Table;
-import model.TableAndColumnInterface;
 
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
@@ -53,9 +50,9 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 		ColData = new DataColumnString();
 		ls = new TreeStore(new DataColumn[] { ColData });
 
-		list.setEnableSearch(true); 
-		list.setAlternateRowColor(true); 
-		
+		list.setEnableSearch(true);
+		list.setAlternateRowColor(true);
+
 		TreeViewColumn col2 = new TreeViewColumn();
 		CellRendererText render2 = new CellRendererText();
 		col2.packStart(render2, true);
@@ -103,18 +100,18 @@ public class DatabaseList implements TreeSelectionListener, TreeViewListener {
 					ResultSet tables = dbmeta.getTables("", dbs.getString(1), "%", types);
 
 					while (tables.next()) {
-						Table table  = new Table();
-						
+						Table table = new Table();
+
 						tablesrow = ls.appendRow(dbrow);
 						ls.setValue(tablesrow, ColData, tables.getString(3));
-						
-						ResultSet columns = dbmeta.getColumns("", dbs.getString(1),tables.getString(3), "%");
-						while(columns.next()) {
+
+						ResultSet columns = dbmeta.getColumns("", dbs.getString(1), tables.getString(3), "%");
+						while (columns.next()) {
 							table.addColumn(columns.getString(4));
 						}
 						table.setSchema(dbs.getString(1));
 						table.setName(tables.getString(3));
-						
+
 						dbmodel.addTable(table);
 					}
 					dbmodel.dumpTables();

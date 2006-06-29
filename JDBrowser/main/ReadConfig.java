@@ -1,4 +1,5 @@
 package main;
+
 import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class ReadConfig {
 			// need to register the path as well
 			beanReader.registerBeanClass("database", DataSourceConfig.class);
 
-			DataSourceConfig config = (DataSourceConfig)  beanReader.parse(file);
+			DataSourceConfig config = (DataSourceConfig) beanReader.parse(file);
 
 			// send bean to system out
 			System.out.println(config);
@@ -50,35 +51,36 @@ public class ReadConfig {
 
 	}
 
-public void test() {
-	 StringWriter outputWriter = new StringWriter(); 
-     
-     // Betwixt just writes out the bean as a fragment
-     // So if we want well-formed xml, we need to add the prolog
-     outputWriter.write("<?xml version='1.0' ?>");
-     
-     // Create a BeanWriter which writes to our prepared stream
-     BeanWriter beanWriter = new BeanWriter(outputWriter);
-     
-     // Configure betwixt
-     // For more details see java docs or later in the main documentation
-     beanWriter.getXMLIntrospector().getConfiguration().setAttributesForPrimitives(false);
-     beanWriter.getBindingConfiguration().setMapIDs(false);
-     beanWriter.enablePrettyPrint();
-     
-     // Write example bean as base element 'person'
-     try {
-		beanWriter.write("database", new DataSourceConfig("alias","driver","password", "userid", "url"));
-	} catch (IOException e) {
-		e.printStackTrace();
-	} catch (SAXException e) {
-		e.printStackTrace();
-	} catch (IntrospectionException e) {
-		e.printStackTrace();
+	public void test() {
+		StringWriter outputWriter = new StringWriter();
+
+		// Betwixt just writes out the bean as a fragment
+		// So if we want well-formed xml, we need to add the prolog
+		outputWriter.write("<?xml version='1.0' ?>");
+
+		// Create a BeanWriter which writes to our prepared stream
+		BeanWriter beanWriter = new BeanWriter(outputWriter);
+
+		// Configure betwixt
+		// For more details see java docs or later in the main documentation
+		beanWriter.getXMLIntrospector().getConfiguration().setAttributesForPrimitives(false);
+		beanWriter.getBindingConfiguration().setMapIDs(false);
+		beanWriter.enablePrettyPrint();
+
+		// Write example bean as base element 'person'
+		try {
+			beanWriter.write("database", new DataSourceConfig("alias", "driver", "password", "userid", "url"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IntrospectionException e) {
+			e.printStackTrace();
+		}
+
+		// Write to System.out
+		// (We could have used the empty constructor for BeanWriter
+		// but this way is more instructive)
+		System.out.println(outputWriter.toString());
 	}
-     
-     // Write to System.out
-     // (We could have used the empty constructor for BeanWriter
-     // but this way is more instructive)
-     System.out.println(outputWriter.toString());
-}}
+}

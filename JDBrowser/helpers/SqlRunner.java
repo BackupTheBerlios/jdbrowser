@@ -9,6 +9,7 @@ import config.DataSourceConfig;
 
 public class SqlRunner extends Thread {
 	Connection conn;
+
 	private boolean done = false;
 
 	public SqlRunner(DataSourceConfig database) {
@@ -56,7 +57,7 @@ public class SqlRunner extends Thread {
 	}
 
 	public void run() {
-		while(!isDone())
+		while (!isDone())
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {

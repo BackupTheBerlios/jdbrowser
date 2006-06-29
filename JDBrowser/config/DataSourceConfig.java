@@ -11,9 +11,11 @@ public class DataSourceConfig {
 	String userid;
 
 	String password;
+
 	public DataSourceConfig() {
-		
+
 	}
+
 	public DataSourceConfig(String alias, String driver, String password, String url, String userid) {
 		super();
 		this.alias = alias;
@@ -22,6 +24,7 @@ public class DataSourceConfig {
 		this.url = url;
 		this.userid = userid;
 	}
+
 	public String getAlias() {
 		return alias;
 	}
@@ -61,6 +64,7 @@ public class DataSourceConfig {
 	public void setUserid(String userid) {
 		this.userid = userid;
 	}
+
 	public String toString() {
 		return alias;
 	}

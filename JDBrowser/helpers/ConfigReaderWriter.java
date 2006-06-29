@@ -34,33 +34,34 @@ public class ConfigReaderWriter {
 			ArrayList databases = (ArrayList) xstream.fromXML(new FileReader("config.xml"));
 			for (int i = 0; i < databases.size(); i++) {
 				DataSourceConfig dsc = (DataSourceConfig) databases.get(i);
-				if(dsc.getAlias().equals(alias))
+				if (dsc.getAlias().equals(alias))
 					return dsc;
-				}
+			}
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+
 	public static void addNewConfigToFile(DataSourceConfig newdsc) {
 		ArrayList databases = getConfiguredDatabases();
-		if(databases == null)
+		if (databases == null)
 			databases = new ArrayList();
 		databases.add(newdsc);
 		WriteConfig(databases);
 	}
-	
+
 	private static void WriteConfig(ArrayList databases) {
 		File f = new File("config.xml");
-		if(!f.exists()) {
+		if (!f.exists()) {
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-			
+
 		XStream xstream = new XStream();
 		xstream.alias("database", DataSourceConfig.class);
 
@@ -80,6 +81,7 @@ public class ConfigReaderWriter {
 		}
 
 	}
+
 	private void WriteConfig() {
 		List databases = new ArrayList();
 

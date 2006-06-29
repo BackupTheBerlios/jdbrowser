@@ -75,12 +75,12 @@ public class CompletionHelper extends Dialog implements KeyListener {
 		col2.addAttributeMapping(render2, CellRendererText.Attribute.TEXT, ColData);
 
 		completionlist.appendColumn(col2);
-		
+
 		completionlist.setEnableSearch(true);
 		completionlist.setAlternateRowColor(true);
 		completionlist.setModel(ls);
 		completionlist.setSearchDataColumn(ColData);
-		
+
 		completionlist.setCanFocus(true);
 		completionlist.setHeadersVisible(true);
 		completionlist.setReorderable(false);

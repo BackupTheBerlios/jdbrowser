@@ -11,7 +11,6 @@ import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gnome.AppBar;
 import org.gnu.gnome.Program;
-import org.gnu.gtk.AboutDialog;
 import org.gnu.gtk.CellRendererPixbuf;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.ComboBox;
@@ -70,25 +69,26 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 	public static String DBUSER = "";
 
 	public static String DBPASSWORD = "";
+
 	static AppBar statusbar;
 
 	public JDBMain() throws FileNotFoundException, GladeXMLException, IOException {
 		ReadConfig();
-		
+
 		gladeApp = new LibGlade("glade/jdbmain.glade", this);
 		addWindowCloser();
-		
-		TextView sqlviewer = (TextView) gladeApp.getWidget("sqltextview");		
+
+		TextView sqlviewer = (TextView) gladeApp.getWidget("sqltextview");
 		SqlView sqlview = new SqlView();
 		DatabaseList dblist = new DatabaseList((TreeView) gladeApp.getWidget("databaselist"));
-		
+
 		TreeView sqltreeview = (TreeView) gladeApp.getWidget("sqltreeview");
 		statusbar = (AppBar) gladeApp.getWidget("appbar1");
 		statusbar.setStatusText("Appliction loaded");
-		
+
 		MenuItem aboutmenu = (MenuItem) gladeApp.getWidget("about1");
 		aboutmenu.addListener(this);
-		
+
 		ToolButton newbutton = (ToolButton) gladeApp.getWidget("new_button");
 		newbutton.addListener(this);
 
@@ -128,16 +128,16 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 			ArrayList databases = (ArrayList) xstream.fromXML(new FileReader("config.xml"));
 			for (int i = 0; i < databases.size(); i++) {
 				DataSourceConfig dsc = (DataSourceConfig) databases.get(i);
-				if(dsc.getAlias().equals(alias))
+				if (dsc.getAlias().equals(alias))
 					return dsc;
-				}
+			}
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	public static void main(String[] args) {
 		// new ReadConfig();
 		try {
@@ -223,10 +223,11 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 		}
 		return true;
 	}
+
 	public static void setStatusbarMessage(String msg) {
 		statusbar.setStatusText(msg);
 	}
-	
+
 	public static void showErrorDialog(String text) {
 		final Window errorwindow = (Window) gladeApp.getWidget("errorwindow");
 		TextView textview = (TextView) gladeApp.getWidget("errortextview");
@@ -234,8 +235,8 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 		TextBuffer buf = new TextBuffer();
 		buf.setText(text);
 		textview.setBuffer(buf);
-		errorwindow.setDefaultSize(400,300);
-		
+		errorwindow.setDefaultSize(400, 300);
+
 		errorwindow.addListener(new LifeCycleListener() {
 			public void lifeCycleEvent(LifeCycleEvent event) {
 			}
@@ -245,10 +246,10 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 				return false;
 			}
 		});
-		
+
 		errorwindow.show();
 	}
-	
+
 	public static Window getInforDialog(String text) {
 		Window infowin = (Window) gladeApp.getWidget("errorwindow");
 		TextView textview = (TextView) gladeApp.getWidget("errortextview");
@@ -256,17 +257,17 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 		TextBuffer buf = new TextBuffer();
 		buf.setText(text);
 		textview.setBuffer(buf);
-		infowin.setDefaultSize(400,300);
+		infowin.setDefaultSize(400, 300);
 		return infowin;
-		
+
 	}
 
 	public void menuItemEvent(MenuItemEvent event) {
 		System.out.println(event.getType());
-		if("about1".equals(((Widget) event.getSource()).getName())) {
+		if ("about1".equals(((Widget) event.getSource()).getName())) {
 			main.AboutDialog dialog = new main.AboutDialog();
 			dialog.run();
 		}
-		
+
 	}
 }

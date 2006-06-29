@@ -5,7 +5,9 @@ import java.util.Collection;
 
 public class Table implements TableAndColumnInterface {
 	private String name;
+
 	private String schema;
+
 	private Collection Columns;
 
 	public Collection getColumns() {
@@ -15,11 +17,11 @@ public class Table implements TableAndColumnInterface {
 	public void addColumn(String columnName) {
 		Column tcif = new Column();
 		tcif.setName(columnName);
-		if(Columns == null)
+		if (Columns == null)
 			Columns = new ArrayList();
 		Columns.add(tcif);
 	}
-	
+
 	public void setColumns(Collection columns) {
 		Columns = columns;
 	}

@@ -1,7 +1,5 @@
 package main;
 
-import helpers.InfoWindow;
-import helpers.ShowProgress;
 import helpers.SqlRunner;
 
 import java.sql.Connection;
@@ -17,12 +15,10 @@ import org.apache.log4j.Logger;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
-import org.gnu.gtk.Dialog;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
-import org.gnu.gtk.Window;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
@@ -34,6 +30,7 @@ import config.DataSourceConfig;
 
 public class TableColumnList implements TreeSelectionListener, TreeViewListener, TreeViewColumnListener {
 	Logger log = Logger.getLogger(TableColumnList.class);
+
 	TreeView list;
 
 	ListStore ls;
@@ -61,9 +58,8 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 		list.setEnableSearch(true);
 		list.setHeadersClickable(true);
 		/*
-									 * allows to use keyboard to search items
-									 * matching the pressed keys
-									 */
+		 * allows to use keyboard to search items matching the pressed keys
+		 */
 
 		list.setAlternateRowColor(true); /* no comments smile */
 		list.setModel(ls);
@@ -78,7 +74,6 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 		list.appendColumn(col2);
 		init = true;
 	}
-
 
 	public void addColumns(List titles) {
 		if (!init)
@@ -101,8 +96,8 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 			col2.addAttributeMapping(render2, CellRendererText.Attribute.TEXT, thiscol);
 
 			col2.setTitle(titles.get(i).toString());
-//			col2.setSortIndicator(true);
-//			col2.setSortOrder(SortType.ASCENDING);
+			// col2.setSortIndicator(true);
+			// col2.setSortOrder(SortType.ASCENDING);
 			col2.addListener(this);
 			col2.setData("DataColumn", thiscol);
 			list.appendColumn(col2);
@@ -128,7 +123,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 			Connection mysql = DriverManager.getConnection(database.getUrl(), database.getUserid(), database.getPassword());
 			DatabaseMetaData dbmeta = mysql.getMetaData();
 
-			System.out.println("Getting columns for table: " + tablename+" in database "+db);
+			System.out.println("Getting columns for table: " + tablename + " in database " + db);
 			ResultSet rs = dbmeta.getColumns(db, null, tablename, null);
 
 			columnnames = new LinkedList();
@@ -138,7 +133,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 				System.out.println("Adding column to array: " + columnname);
 			}
 			addColumns(columnnames);
-			addDataToTable(null,db, database);
+			addDataToTable(null, db, database);
 			rs.close();
 			mysql.close();
 			list.showAll();
@@ -182,7 +177,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 					break;
 			}
 			long end = System.currentTimeMillis();
-			JDBMain.setStatusbarMessage("Got "+counter+" rows in "+(end-start)+" milliseconds");
+			JDBMain.setStatusbarMessage("Got " + counter + " rows in " + (end - start) + " milliseconds");
 			rs.close();
 			sqlrun.close();
 			list.showAll();
@@ -192,6 +187,7 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 		}
 
 	}
+
 	public void addColumnsFromResultSet(ResultSet rs) throws SQLException {
 		ResultSetMetaData metadata = rs.getMetaData();
 		if (columnnames == null)
@@ -203,24 +199,25 @@ public class TableColumnList implements TreeSelectionListener, TreeViewListener,
 		}
 		addColumns(columnnames);
 	}
+
 	public void selectionChangedEvent(TreeSelectionEvent event) {
-		//System.out.println("OneClick " + event);
+		// System.out.println("OneClick " + event);
 	}
 
 	public void treeViewEvent(TreeViewEvent event) {
-//		if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
-//			TreePath[] tp = list.getSelection().getSelectedRows();
-//			if (tp.length == 1) {
-//				TreeIter item = ls.getIter(tp[0].toString());
-//				System.out.println("string selected: " + ls.getValue(item, ColData));
-//			}
-//		}
+		// if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
+		// TreePath[] tp = list.getSelection().getSelectedRows();
+		// if (tp.length == 1) {
+		// TreeIter item = ls.getIter(tp[0].toString());
+		// System.out.println("string selected: " + ls.getValue(item, ColData));
+		// }
+		// }
 
 	}
 
 	public void columnClickedEvent(TreeViewColumnEvent event) {
-		TreeViewColumn col1 =(TreeViewColumn) event.getSource();
-		DataColumn col =(DataColumn) col1.getData("DataColumn");
+		TreeViewColumn col1 = (TreeViewColumn) event.getSource();
+		DataColumn col = (DataColumn) col1.getData("DataColumn");
 		list.setSearchDataColumn(col);
 		col1.setSortColumn(col);
 		list.showAll();
