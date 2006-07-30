@@ -9,11 +9,9 @@
 	<classpathentry kind="lib" path="lib/commons-digester.jar"/>
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
-	<classpathentry kind="lib" path="/eclub2-srv/tools/ojdbc14_g.jar"/>
 	<classpathentry kind="lib" path="lib/xstream-1.1.2.jar"/>
 	<classpathentry kind="lib" path="lib/gnome/glade2.12.jar"/>
 	<classpathentry kind="lib" path="lib/gnome/gnome2.12.jar"/>
-	<classpathentry kind="lib" path="/usr/share/jdbc2-postgresql-6/lib/pg74.215.jdbc2.jar"/>
 	<classpathentry kind="lib" path="lib/gnome/glib0.2.5.jar"/>
 	<classpathentry kind="lib" path="lib/gnome/gtk2.8.5.jar"/>
 	<classpathentry kind="output" path=""/>
