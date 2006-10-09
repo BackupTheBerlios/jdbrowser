@@ -7,19 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.gnu.gdk.Pixbuf;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
+import org.gnu.gnome.App;
 import org.gnu.gnome.AppBar;
 import org.gnu.gnome.Program;
 import org.gnu.gtk.ButtonsType;
-import org.gnu.gtk.CellRendererPixbuf;
-import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.ComboBox;
-import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnPixbuf;
 import org.gnu.gtk.DataColumnString;
-import org.gnu.gtk.Dialog;
 import org.gnu.gtk.DialogFlags;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Gtk;
@@ -27,17 +25,14 @@ import org.gnu.gtk.ListStore;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.MessageDialog;
 import org.gnu.gtk.MessageType;
-import org.gnu.gtk.TextBuffer;
-import org.gnu.gtk.TextView;
+import org.gnu.gtk.ResponseType;
 import org.gnu.gtk.ToolButton;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeView;
-import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.Viewport;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
-import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MenuItemEvent;
@@ -52,6 +47,7 @@ import config.DataSourceConfig;
 import config.DataSourceConfigUI;
 
 public class JDBMain implements ToolButtonListener, MenuItemListener {
+	Logger log = Logger.getLogger(JDBMain.class);
 	public static String DB_DRIVER = null;
 
 	public static LibGlade gladeApp;
@@ -79,6 +75,8 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 
 	static AppBar statusbar;
 	private static Window window;
+	SqlView sqlview;
+	
 	public JDBMain() throws FileNotFoundException, GladeXMLException, IOException {
 		BasicConfigurator.configure();
 		readConfig();
@@ -88,7 +86,7 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 		addWindowCloser();
 
 //		TextView sqlviewer = (TextView) gladeApp.getWidget("sqltextview");
-		SqlView sqlview = new SqlView();
+		sqlview = new SqlView();
 		DatabaseList dblist = new DatabaseList((TreeView) gladeApp.getWidget("databaselist"));
 
 		TreeView sqltreeview = (TreeView) gladeApp.getWidget("sqltreeview");
@@ -212,27 +210,17 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 	public static void showErrorDialog(String text) {
 		final MessageDialog dialog = new MessageDialog(window, DialogFlags.MODAL,MessageType.ERROR, ButtonsType.OK, text, true);
 		dialog.setTitle("Error");
-		dialog.run();
-		dialog.addListener(new LifeCycleListener() {
-			public void lifeCycleEvent(LifeCycleEvent event) {
-			}
-
-			public boolean lifeCycleQuery(LifeCycleEvent event) {
-				dialog.destroy();
-				return false;
-			}
-		});
+		int status = dialog.run();
+		if(status == ResponseType.OK.getValue()) 
+			dialog.destroy();
 	}
 
-	public static Window getInforDialog(String text) {
-		Window infowin = (Window) gladeApp.getWidget("errorwindow");
-		TextView textview = (TextView) gladeApp.getWidget("errortextview");
-		textview.setEditable(false);
-		TextBuffer buf = new TextBuffer();
-		buf.setText(text);
-		textview.setBuffer(buf);
-		infowin.setDefaultSize(400, 300);
-		return infowin;
+	public static void getInforDialog(String text) {
+		final MessageDialog dialog = new MessageDialog(window, DialogFlags.MODAL,MessageType.ERROR, ButtonsType.OK, text, true);
+		dialog.setTitle("Error");
+		int status = dialog.run();
+		if(status == ResponseType.OK.getValue()) 
+			dialog.destroy();
 
 	}
 
@@ -240,7 +228,9 @@ public class JDBMain implements ToolButtonListener, MenuItemListener {
 		System.out.println(event.getType());
 		if ("about1".equals(((Widget) event.getSource()).getName())) {
 			main.AboutDialog dialog = new main.AboutDialog();
-			dialog.run();
+			int status = dialog.run();
+			if(status == ResponseType.CANCEL.getValue()  ) 
+				dialog.destroy();
 		}
 
 	}

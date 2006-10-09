@@ -16,6 +16,7 @@ import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeView;
+import org.gnu.gtk.WindowPosition;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.KeyEvent;
@@ -124,6 +125,8 @@ public class SqlView implements KeyListener {
 					log.debug("Running completion");
 					CompletionHelper comp = new CompletionHelper(model.getTables(getCombobox_database().getActiveText()));
 					comp.showAll();
+					
+					comp.setModal(true);
 					comp.run();
 					// Table table = model.getTable(comp.getUserselection());
 					view.getBuffer().insertText(" " + comp.getUserselection());

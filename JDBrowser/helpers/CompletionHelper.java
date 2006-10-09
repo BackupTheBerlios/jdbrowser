@@ -9,8 +9,6 @@ import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Dialog;
-import org.gnu.gtk.HBox;
-import org.gnu.gtk.PolicyType;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
@@ -42,10 +40,11 @@ public class CompletionHelper extends Dialog implements KeyListener {
 	}
 
 	public void init(Collection collection) {
-		HBox mainBox = new HBox(false, 0);
-		this.getDialogLayout().add(mainBox);
+//		HBox mainBox = new HBox(false, 0);
+		
 		this.setDefaultSize(400, 200);
-
+		this.setBorderWidth(0);
+		this.setDecorated(false);
 		ScrolledWindow scrollwindow = new ScrolledWindow(null, null);
 		scrollwindow.setCanFocus(true);
 		completionlist = new TreeView();
@@ -55,9 +54,13 @@ public class CompletionHelper extends Dialog implements KeyListener {
 			TableAndColumnInterface item = (TableAndColumnInterface) ite.next();
 			addData(item.getName());
 		}
-		scrollwindow.setPolicy(PolicyType.ALWAYS, PolicyType.ALWAYS);
+//		scrollwindow.setPolicy(PolicyType.ALWAYS, PolicyType.ALWAYS);
 		scrollwindow.addWithViewport(completionlist);
-		mainBox.packStart(scrollwindow, true, true, 0);
+		this.getDialogLayout().add(scrollwindow);
+//		mainBox.packStart(scrollwindow, true, true, 0);
+
+		completionlist.activate();
+		completionlist.grabFocus();
 
 		completionlist.addListener(this);
 
